@@ -36,6 +36,10 @@ var orderSchema = new mongoose.Schema(
       enum: ["COD", "PAYPAL", "MOMO"],
       required: true,
     },
+    isDelete: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

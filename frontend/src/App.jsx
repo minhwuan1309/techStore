@@ -40,7 +40,8 @@ import { showCart } from "store/app/appSlice"
 import BlogsPage from "pages/public/Blogs"
 import CreateCategory from "pages/admin/CreateCategory"
 import ManageCategories from "pages/admin/ManageCategories"
-import ManageCoupon from "pages/admin/ManageCoupon";
+import ManageCoupon from "pages/admin/ManageCoupon"
+// import Chat from "pages/admin/Chat"
 
 
 function App() {
@@ -89,6 +90,7 @@ function App() {
           <Route path={path.CREATE_CATEGORY} element={<CreateCategory />} />
           <Route path={path.MANAGE_CATEGORIES} element={<ManageCategories />} />
           <Route path={path.MANAGE_COUPON} element={<ManageCoupon/>}/>
+          {/* <Route path={path.CHAT} element = {<Chat/>}/> */}
         </Route>
         <Route path={path.MEMBER} element={<MemberLayout />}>
           <Route path={path.PERSONAL} element={<Personal />} />

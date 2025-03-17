@@ -7,6 +7,10 @@ var brandSchema = new mongoose.Schema({
         required: true,
         unique: true,
         index: true,
+    },
+    isDelete: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

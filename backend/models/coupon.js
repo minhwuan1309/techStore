@@ -14,6 +14,10 @@ var couponSchema = new mongoose.Schema({
     expiry: {
         type: Date,
         required: true,
+    },
+    isDelete: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

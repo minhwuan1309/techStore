@@ -62,6 +62,10 @@ var userSchema = new mongoose.Schema({
     registerToken: {
         type: String
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true
 });

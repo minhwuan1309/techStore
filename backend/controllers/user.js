@@ -6,10 +6,11 @@ const {
 } = require("../middlewares/jwt")
 const jwt = require("jsonwebtoken")
 const sendMail = require("../utils/sendMail")
+const makeToken = require("../utils/sendMail")
 const crypto = require("crypto")
-const makeToken = require("uniqid")
 const { users } = require("../utils/constant")
 const user = require("../models/user")
+
 
 const register = asyncHandler(async (req, res) => {
   const { email, password, firstname, lastname, mobile } = req.body
@@ -32,17 +33,30 @@ const register = asyncHandler(async (req, res) => {
     })
     if (newUser) {
       const html = `
-  <div style="font-family: Arial, sans-serif line-height: 1.6 color: #333">
-    <h1 style="color: #4CAF50">Chào mừng bạn đến với Tech Store!</h1>
-    <p>Cảm ơn bạn đã đăng ký tài khoản tại Tech Store. Vui lòng sử dụng mã dưới đây để xác nhận đăng ký tài khoản của bạn:</p>
-    <div style="padding: 15px border: 1px solid #ddd background-color: #f9f9f9 margin: 20px 0 text-align: center">
-      <span style="font-size: 20px font-weight: bold color: #4CAF50">${token}</span>
+    <!-- Container for the access token -->
+    <div style="max-width: 500px; margin: 40px auto; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+      <!-- Header with a green background and bold title -->
+      <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
+        <h1 style="color: #fff; font-size: 24px; font-weight: bold;">Chào mừng bạn đến với Tech Store!</h1>
+      </div>
+      
+      <!-- Main content with a white background and padding -->
+      <div style="padding: 20px;">
+        <p>Cảm ơn bạn đã đăng ký tài khoản tại Tech Store. Vui lòng sử dụng mã dưới đây để xác nhận đăng ký tài khoản của bạn:</p>
+        
+        <!-- Access token container with a green background and bold text -->
+        <div style="background-color: #4CAF50; padding: 20px; text-align: center; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+          <span style="font-size: 24px; font-weight: bold; color: #fff;">${token}</span>
+        </div>
+        
+        <!-- Expiration notice with a smaller font size -->
+        <p style="font-size: 16px;">Nếu bạn không yêu cầu đăng ký tài khoản, vui lòng bỏ qua email này. Mã này sẽ hết hạn sau 30 phút.</p>
+        
+        <!-- Footer with a smaller font size and a centered alignment -->
+        <p style="font-size: 16px; text-align: center;">Trân trọng,<br />Đội ngũ hỗ trợ Tech Store</p>
+      </div>
     </div>
-    <p>Nếu bạn không yêu cầu đăng ký tài khoản, vui lòng bỏ qua email này. Mã này sẽ hết hạn sau 30 phút.</p>
-    <p>Trân trọng,<br />Đội ngũ hỗ trợ Tech Store</p>
-  </div>
 `
-
       await sendMail({
         email,
         html,

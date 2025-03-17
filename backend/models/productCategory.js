@@ -12,6 +12,10 @@ var productCategorySchema = new mongoose.Schema({
     },
     image:{
         type: String,
+    },
+    isDelete: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true
