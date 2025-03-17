@@ -6,11 +6,10 @@ const {
 } = require("../middlewares/jwt")
 const jwt = require("jsonwebtoken")
 const sendMail = require("../utils/sendMail")
-const makeToken = require("../utils/sendMail")
 const crypto = require("crypto")
 const { users } = require("../utils/constant")
 const user = require("../models/user")
-
+const makeToken = () => crypto.randomBytes(3).toString('hex').toUpperCase()
 
 const register = asyncHandler(async (req, res) => {
   const { email, password, firstname, lastname, mobile } = req.body
@@ -33,30 +32,36 @@ const register = asyncHandler(async (req, res) => {
     })
     if (newUser) {
       const html = `
-    <!-- Container for the access token -->
-    <div style="max-width: 500px; margin: 40px auto; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-      <!-- Header with a green background and bold title -->
-      <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
-        <h1 style="color: #fff; font-size: 24px; font-weight: bold;">Chào mừng bạn đến với Tech Store!</h1>
-      </div>
-      
-      <!-- Main content with a white background and padding -->
-      <div style="padding: 20px;">
-        <p>Cảm ơn bạn đã đăng ký tài khoản tại Tech Store. Vui lòng sử dụng mã dưới đây để xác nhận đăng ký tài khoản của bạn:</p>
-        
-        <!-- Access token container with a green background and bold text -->
-        <div style="background-color: #4CAF50; padding: 20px; text-align: center; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-          <span style="font-size: 24px; font-weight: bold; color: #fff;">${token}</span>
+      <div style="max-width: 500px; margin: 40px auto; padding: 20px; background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 15px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
+        <!-- Header section -->
+        <div style="background-color: #2C3E50; padding: 25px; text-align: center; border-radius: 15px 15px 0 0;">
+          <h1 style="margin: 0; color: #fff; font-size: 28px; font-weight: bold; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">Chào mừng bạn đến với Tech Store!</h1>
         </div>
         
-        <!-- Expiration notice with a smaller font size -->
-        <p style="font-size: 16px;">Nếu bạn không yêu cầu đăng ký tài khoản, vui lòng bỏ qua email này. Mã này sẽ hết hạn sau 30 phút.</p>
-        
-        <!-- Footer with a smaller font size and a centered alignment -->
-        <p style="font-size: 16px; text-align: center;">Trân trọng,<br />Đội ngũ hỗ trợ Tech Store</p>
+        <!-- Main content section -->
+        <div style="padding: 25px;">
+          <p style="margin: 0 0 25px 0; font-size: 16px; color: #444444; line-height: 1.6; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+            Cảm ơn bạn đã đăng ký tài khoản tại Tech Store. Vui lòng sử dụng mã dưới đây để xác nhận đăng ký tài khoản của bạn:
+          </p>
+          
+          <!-- Token container -->
+          <div style="background-color: #3498DB; padding: 25px; text-align: center; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin-bottom: 25px;">
+            <span style="font-size: 28px; font-weight: bold; color: #fff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">${token}</span>
+          </div>
+          
+          <!-- Expiration notice -->
+          <p style="font-size: 16px; color: #555555; margin: 0 0 25px 0; line-height: 1.6; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+            Nếu bạn không yêu cầu đăng ký tài khoản, vui lòng bỏ qua email này. Mã này sẽ hết hạn sau 5 phút.
+          </p>
+          
+          <!-- Footer section -->
+          <p style="font-size: 16px; text-align: center; color: #555555; margin: 0; line-height: 1.6; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+            Trân trọng,<br />
+            <strong>Đội ngũ hỗ trợ Tech Store</strong>
+          </p>
+        </div>
       </div>
-    </div>
-`
+    `
       await sendMail({
         email,
         html,

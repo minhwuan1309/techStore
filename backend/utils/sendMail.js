@@ -1,11 +1,6 @@
 const nodemailer = require('nodemailer')
 const asyncHandler = require('express-async-handler')
 
-const makeToken = () => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
-}
-
 
 const sendMail = asyncHandler(async ({ email, html, subject }) => {
     let transporter = nodemailer.createTransport({
@@ -20,7 +15,7 @@ const sendMail = asyncHandler(async ({ email, html, subject }) => {
 
     // send mail with defined transport object
     let info = await transporter.sendMail({
-        from: '"Cuahangdientu" <no-relply@cuahangdientu.com>', // sender address
+        from: '"Cuahangdientu" <no-reply@cuahangdientu.com>', // sender address
         to: email, // list of receivers
         subject: subject, // Subject line
         html: html, // html body
@@ -29,4 +24,4 @@ const sendMail = asyncHandler(async ({ email, html, subject }) => {
     return info
 })
 
-module.exports = {sendMail, makeToken}
+module.exports = sendMail

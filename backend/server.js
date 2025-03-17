@@ -5,7 +5,7 @@ const dbConnect = require("./config/dbconnect")
 const initRoutes = require("./routes")
 const cookieParser = require("cookie-parser")
 const cors = require("cors")
-const {initSocket } = require("./config/socket")
+// const {initSocket } = require("./config/socket")
 const app = express()
 const server = http.createServer(app) // Tạo server HTTP để tích hợp với WebSocket
 
@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: false }))
 dbConnect()
 
 initRoutes(app)
-initSocket(server)
+// initSocket(server)
 
 
 // Khởi động server
