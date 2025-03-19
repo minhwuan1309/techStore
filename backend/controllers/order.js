@@ -9,6 +9,8 @@ const coupon = require("../models/coupon");
 const Product = require("../models/product");
 
 const createOrder = asyncHandler(async (req, res) => {
+  console.log("📩 Dữ liệu nhận được:", req.body);
+
   const { _id } = req.user;
   const {
     products,
@@ -20,48 +22,41 @@ const createOrder = asyncHandler(async (req, res) => {
     finalTotal,
   } = req.body;
 
-  const user = await User.findById(_id);
-  if (!user) throw new Error("Không tìm thấy người dùng");
-  if (address) await User.findByIdAndUpdate(_id, { address, cart: [] });
+  if (!products || products.length === 0) {
+    return res.status(400).json({ success: false, message: "Danh sách sản phẩm không hợp lệ!" });
+  }
+
+  if (!paymentMethod) {
+    return res.status(400).json({ success: false, message: "Thiếu phương thức thanh toán!" });
+  }
 
   const orderData = {
     products,
     total,
-    finalTotal: finalTotal || total, // Use finalTotal if provided
-    discount: discount || 0, // Use discount if provided
-    orderBy: _id,
+    finalTotal: finalTotal || total,
+    discount: discount || 0,
+    orderBy: _id,  // Sửa lỗi thiếu orderBy
     paymentMethod,
   };
   if (status) orderData.status = status;
 
-  const newOrder = await Order.create(orderData);
-  if (!newOrder) throw new Error("Tạo đơn hàng thất bại");
-  await User.findByIdAndUpdate(_id, {
-    $push: { orderHistory: newOrder._id },
-  });
-
   try {
-    for (const item of products) {
-      const updatedProduct = await Product.findByIdAndUpdate(
-        item.product,
-        { $inc: { quantity: -item.quantity, sold: item.quantity } },
-        { new: true }
-      );
-      if (!updatedProduct)
-        throw new Error(`Sản phẩm với ID ${item.product} không tồn tại.`);
-    }
-    await sendOrderConfirmationEmail(user.email, newOrder);
+    const newOrder = await Order.create(orderData);
     res.json({
       success: true,
       message: "Đơn hàng đã được tạo thành công",
       order: newOrder,
     });
   } catch (error) {
-    console.error("Lỗi trong quá trình xử lý đơn hàng:", error.message);
-    await Order.findByIdAndDelete(newOrder._id);
-    throw new Error(`Quá trình xử lý đơn hàng thất bại: ${error.message}`);
+    console.error("❌ Lỗi khi tạo đơn hàng:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server khi tạo đơn hàng",
+      error: error.message,
+    });
   }
 });
+
 
 
 const updateStatus = asyncHandler(async (req, res) => {

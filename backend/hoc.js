@@ -1,34 +1,27 @@
-// Higher-Order Component (HOC) - Function
-// const t = 'hello'
-const function_1 = (param) => {
-    console.log('1' + param)
+/*
+
+
+Server đang chạy trên cổng: 5000
+📩 Dữ liệu nhận được: {
+  products: [
+    {
+      product: '6763a7f7c53ee493f244b96c',
+      quantity: 1,
+      price: 4275000,
+      title: 'Màn hình LG UltraWide 29WQ600 29 inch',
+      thumbnail: ''
+    }
+  ],
+  total: 4275000,
+  finalTotal: 4275000,
+  discount: 0,
+  address: 'Chưa có địa chỉ',
+  paymentMethod: 'COD',
+  orderBy: '67d7d9f3ae515ba355d7a167',
+  status: 'Pending'
 }
-
-const function_2 = (param2) => {
-    console.log('2' + param2)
-}
-
-const function_hoc = (callback) => (x) => {
-    const t = 'abc'
-    callback(x + t)
-}
-
-// function_1('abc')
-// function_2('xyz')
-// function_hoc(function_1)('function 1')
-// function_hoc(function_2)('function 2')
-
-// A: function () => A('')
-// function_1('function 1' + 'abc')
-
-const Component = (props) => {
-    return console.log('JSX' + props)
-}
-
-const hoc = (Component) => (props) => {
-    const t = 'abc'
-    return <Component {...props} t={t} />
-}
-
-// Function(param)
-// <Component props='123' />
+❌ Lỗi khi tạo đơn hàng: MongooseError: Operation `orders.insertOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (D:\DACN\backend\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:188:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+*/

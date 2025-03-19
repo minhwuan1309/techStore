@@ -32,6 +32,7 @@ const Product = ({
 }) => {
   const [isShowOption, setIsShowOption] = useState(false)
   const { current } = useSelector((state) => state.user)
+
   const handleClickOptions = async (e, flag) => {
     e.stopPropagation()
     if (flag === "CART") {
@@ -86,97 +87,102 @@ const Product = ({
       )
     }
   }
+
   return (
     <div
-      className="relative w-full max-w-sm rounded-lg shadow-lg overflow-hidden transition-all duration-300 transform hover:shadow-xl hover:bg-gray-200"
+      className="group relative bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl"
       onMouseEnter={() => setIsShowOption(true)}
       onMouseLeave={() => setIsShowOption(false)}
+      onClick={(e) =>
+        navigate(
+          `/${productData?.category?.toLowerCase()}/${productData?._id}/${
+            productData?.title
+          }`
+        )
+      }
     >
-      <div
-        className="w-full border p-[15px] flex flex-col items-center rounded-lg overflow-hidden hover:scale-105 cursor-pointer"
-        onClick={(e) =>
-          navigate(
-            `/${productData?.category?.toLowerCase()}/${productData?._id}/${
-              productData?.title
-            }`
-          )
-        }
-        onMouseEnter={(e) => {
-          e.stopPropagation()
-          setIsShowOption(true)
-        }}
-        onMouseLeave={(e) => {
-          e.stopPropagation()
-          setIsShowOption(false)
-        }}
-      >
-        <div className="w-full relative">
-          {isShowOption && (
-            <div className="absolute bottom-[-10px] left-0 right-0 flex justify-center gap-2 animate-slide-top">
-              {!["1945", "1980"].includes(current?.role?.toString()) &&
-                (current?.cart?.some(
-                  (el) => el.product === productData._id.toString()
-                ) ? (
-                  <span title="Added to Cart">
-                    <SelectOption
-                      icon={<BsFillCartCheckFill color="green" />}
-                    />
-                  </span>
-                ) : (
-                  <span
-                    title="Add to Cart"
-                    onClick={(e) => handleClickOptions(e, "CART")}
-                  >
-                    <SelectOption icon={<BsFillCartPlusFill />} />
-                  </span>
-                ))}
-              {/* Hide "Add to Wishlist" for ADMIN and EMPLOYEE */}
-              {!["1945", "1980"].includes(current?.role?.toString()) && (
-                <span
-                  title="Add to Wishlist"
-                  onClick={(e) => handleClickOptions(e, "WISHLIST")}
-                >
-                  <SelectOption
-                    icon={
-                      <BsFillSuitHeartFill
-                        color={
-                          current?.wishlist?.some((i) => i._id === pid)
-                            ? "red"
-                            : "gray"
-                        }
-                      />
-                    }
-                  />
-                </span>
-              )}
-            </div>
-          )}
+      {/* Product Badge (New/Trending) */}
+      {!normal && (
+        <div className="absolute top-3 right-3 z-10">
           <img
-            src={
-              productData?.thumb ||
-              "https://apollobattery.com.au/wp-content/uploads/2022/08/default-product-image.png"
-            }
+            src={isNew ? label : trending}
             alt=""
-            className="w-[274px] h-[274px]  object-cover"
+            className="w-12 h-12 object-contain"
           />
-          {!normal && (
-            <img
-              src={isNew ? label : trending}
-              alt=""
-              className={`absolute w-[100px] h-[35px] top-0 right-[0] object-cover`}
-            />
+        </div>
+      )}
+      
+      {/* Product Image */}
+      <div className="relative overflow-hidden aspect-square hover:cursor-pointer">
+        <img
+          src={productData?.thumb || "https://apollobattery.com.au/wp-content/uploads/2022/08/default-product-image.png"}
+          alt={productData?.title || "Product image"}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+        />
+        
+        {/* Quick Actions Overlay */}
+        {isShowOption && (
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center gap-4 animate-fade-in">
+            {/* Quick View Button */}
+            <button
+              onClick={(e) => handleClickOptions(e, "QUICK_VIEW")}
+              className="w-10 h-10 rounded-full bg-white text-gray-800 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-colors duration-300"
+              title="Quick View"
+            >
+              <AiFillEye size={20} />
+            </button>
+            
+            {/* Add to Cart Button */}
+            {!["1945", "1980"].includes(current?.role?.toString()) && (
+              <button
+                onClick={(e) => handleClickOptions(e, "CART")}
+                className="w-10 h-10 rounded-full bg-white text-gray-800 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-colors duration-300"
+                title={current?.cart?.some(el => el.product === productData._id.toString()) ? "Added to Cart" : "Add to Cart"}
+              >
+                {current?.cart?.some(el => el.product === productData._id.toString()) ? (
+                  <BsFillCartCheckFill size={18} className="text-green-600" />
+                ) : (
+                  <BsFillCartPlusFill size={18} />
+                )}
+              </button>
+            )}
+            
+            {/* Add to Wishlist Button */}
+            {!["1945", "1980"].includes(current?.role?.toString()) && (
+              <button
+                onClick={(e) => handleClickOptions(e, "WISHLIST")}
+                className="w-10 h-10 rounded-full bg-white text-gray-800 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-colors duration-300"
+                title="Add to Wishlist"
+              >
+                <BsFillSuitHeartFill
+                  size={18}
+                  className={current?.wishlist?.some(i => i._id === pid) ? "text-red-500" : ""}
+                />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+      
+      {/* Product Info */}
+      <div className="p-4">
+        {/* Title */}
+        <h3 className="font-medium text-gray-800 mb-2 line-clamp-1 hover:cursor-pointer">
+          {productData?.title}
+        </h3>
+        
+        {/* Rating */}
+        <div className="flex items-center mb-2">
+          {renderStarFromNumber(productData?.totalRatings)?.map(
+            (el, index) => (
+              <span key={index}>{el}</span>
+            )
           )}
         </div>
-        <div className="flex flex-col mt-[15px] items-start gap-1 w-full">
-          <span className="line-clamp-1">{productData?.title}</span>
-          <span>{`${formatMoney(productData?.price)} VNĐ`}</span>
-          <span className="flex h-4 items-center">
-            {renderStarFromNumber(productData?.totalRatings)?.map(
-              (el, index) => (
-                <span key={index}>{el}</span>
-              )
-            )}
-          </span>
+        
+        {/* Price */}
+        <div className="font-semibold text-lg text-indigo-600 hover:cursor-pointer">
+          {formatMoney(productData?.price)} VNĐ
         </div>
       </div>
     </div>

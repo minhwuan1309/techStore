@@ -1,38 +1,36 @@
-import React, { useState, useEffect } from "react";
-import { ProductCard } from "components";
-import { apiGetProducts } from "apis";
+import React, { useState, useEffect } from "react"
+import { ProductCard } from "components"
+import { apiGetProducts } from "apis"
 
 const FeatureProducts = () => {
-  const [products, setProducts] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [products, setProducts] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const fetchProducts = async () => {
     const response = await apiGetProducts({
       limit: 6,
       sort: "-totalRatings",
-    });
-    if (response.success) setProducts(response.products);
-    setLoading(false);
-  };
+    })
+    if (response.success) setProducts(response.products)
+    setLoading(false)
+  }
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    fetchProducts()
+  }, [])
 
   if (loading) {
-    return <div>Đang tải...</div>;
+    return <div>Đang tải...</div>
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div>{error}</div>
   }
 
   return (
     <div className="w-full">
-      <h3 className="text-[20px] font-semibold py-[15px] border-b-2 border-main">
-        SẢN PHẨM NỔI BẬT
-      </h3>
+      <div className="border-b-2 border-main"></div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
         {products?.length > 0 ? (
           products.map((el) => (
@@ -65,7 +63,7 @@ const FeatureProducts = () => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default FeatureProducts;
+export default FeatureProducts

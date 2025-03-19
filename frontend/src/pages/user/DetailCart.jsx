@@ -161,8 +161,10 @@ const DetailCart = ({ location, navigate }) => {
 
               {/* Giá tiền */}
               <span className="text-lg font-bold text-main">
-                {formatMoney(el.price * el.quantity)} VNĐ
+                {formatMoney(el.price)} VNĐ
               </span>
+              {el.note && <span className="text-red-500 text-sm ml-2">({el.note})</span>}
+
             </div>
             <Button
               className="m-2 text-red-500 hover:text-red-700 transition"

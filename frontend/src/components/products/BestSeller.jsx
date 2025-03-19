@@ -33,42 +33,41 @@ const BestSeller = () => {
     if (activedTab === 1) setProducts(bestSellers)
     if (activedTab === 2) setProducts(newProducts)
   }, [activedTab])
+  
   return (
     <div className={clsx(isShowModal ? "hidden" : "")}>
-      <div className="flex px-4 text-[20px] ml-[-32px]">
-        {tabs.map((el) => (
-          <span
-            key={el.id}
-            className={`font-semibold text-center md:text-start uppercase px-8 border-r cursor-pointer text-gray-400 ${
-              activedTab === el.id ? "text-gray-900" : ""
-            }`}
-            onClick={() => setActivedTab(el.id)}
-          >
-            {el.name}
-          </span>
-        ))}
-      </div>
-      <div className="mt-4 hidden md:block mx-[-10px] border-t-2 border-main pt-4">
+      <div className="border-b-2 border-main"></div>
+      
+      {/* Product Slider for Desktop */}
+      <div className="mt-6 hidden md:block">
         <CustomSlider products={products} activedTab={activedTab} />
       </div>
-      <div className="mt-4 md:hidden block mx-[-10px] border-t-2 border-main pt-4">
+      
+      {/* Product Slider for Mobile */}
+      <div className="mt-6 md:hidden block">
         <CustomSlider
           products={products}
           slidesToShow={1}
           activedTab={activedTab}
         />
       </div>
-      <div className="w-full flex flex-col md:flex-row gap-4 mt-4">
-        <img
-          src="https://cdn.shopify.com/s/files/1/1903/4853/files/banner2-home2_2000x_crop_center.png?v=1613166657"
-          alt="banner"
-          className="flex-1 object-contain"
-        />
-        <img
-          src="https://cdn.shopify.com/s/files/1/1903/4853/files/banner1-home2_2000x_crop_center.png?v=1613166657"
-          alt="banner"
-          className="flex-1 object-contain"
-        />
+      
+      {/* Promotional Banners */}
+      <div className="w-full flex flex-col md:flex-row gap-6 mt-8">
+        <div className="flex-1 overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+          <img
+            src="https://cdn.shopify.com/s/files/1/1903/4853/files/banner2-home2_2000x_crop_center.png?v=1613166657"
+            alt="Promotion banner 1"
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        <div className="flex-1 overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+          <img
+            src="https://cdn.shopify.com/s/files/1/1903/4853/files/banner1-home2_2000x_crop_center.png?v=1613166657"
+            alt="Promotion banner 2"
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+          />
+        </div>
       </div>
     </div>
   )

@@ -14,28 +14,30 @@ const ProductCard = ({
   return (
     <div
       onClick={(e) => navigate(`/${category?.toLowerCase()}/${pid}/${title}`)}
-      className="col-span-1 cursor-pointer"
+      className="col-span-1 cursor-pointer group"
     >
-      <div className="flex w-full border">
-        <img
-          src={image}
-          alt="products"
-          className="w-[120px] object-contain p-4"
-        />
-        <div className="flex flex-col mt-[15px] items-start gap-1 w-full text-base">
-          <span className="line-clamp-1 capitalize">
+      <div className="flex flex-col sm:flex-row w-full bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-100">
+        <div className="w-full sm:w-[120px] h-[120px] overflow-hidden">
+          <img
+            src={image || "https://apollobattery.com.au/wp-content/uploads/2022/08/default-product-image.png"}
+            alt={title || "Product image"}
+            className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+          />
+        </div>
+        <div className="flex flex-col p-4 justify-center gap-2 w-full">
+          <span className="line-clamp-1 capitalize text-gray-800 font-medium cursor-pointer group-hover:text-indigo-600 transition-colors duration-300">
             {title?.toLowerCase()}
           </span>
-          <span className="flex h-4">
+          <div className="flex h-4 mb-1 cursor-pointer">
             {renderStarFromNumber(totalRatings, 14)?.map((el, index) => (
-              <span key={index}>{el}</span>
+              <span key={index} className="text-amber-400">{el}</span>
             ))}
-          </span>
-          <span>{`${formatMoney(price)} VNĐ`}</span>
+          </div>
+          <span className="font-semibold text-indigo-600">{`${formatMoney(price)} VNĐ`}</span>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default withBaseComponent(memo(ProductCard))

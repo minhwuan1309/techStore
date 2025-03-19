@@ -18,8 +18,9 @@ const Checkout = ({ dispatch, navigate }) => {
   const [paymentMethod, setPaymentMethod] = useState("")
   const [couponCode, setCouponCode] = useState("")
   const [discount, setDiscount] = useState(0)
-  const selectedProducts =
-    JSON.parse(localStorage.getItem("selectedProducts")) || [];
+  const selectedProducts = JSON.parse(localStorage.getItem("selectedProducts")) || [];
+  console.log("Selected Products in Checkout:", selectedProducts); // Debugging
+  
   const total = selectedProducts?.reduce(
     (sum, el) => sum + el.price * el.quantity,
     0
@@ -56,38 +57,49 @@ const Checkout = ({ dispatch, navigate }) => {
   }, [paymentMethod])
 
   const handleSaveOrder = async () => {
+    if (!current?._id) {
+      Swal.fire("Lỗi!", "Không tìm thấy thông tin người dùng!", "error");
+      return;
+    }
+  
     const payload = {
-      products: selectedProducts,
+      products: selectedProducts.map((el) => ({
+        product: el._id, // Đảm bảo là ObjectId
+        quantity: el.quantity,
+        price: el.price,
+        title: el.title,
+        thumbnail: el.thumbnail || "",
+      })),
       total: Math.round(
-        +selectedProducts?.reduce((sum, el) => +el?.price * el.quantity + sum, 0) /
-          25000
+        selectedProducts.reduce((sum, el) => el.price * el.quantity + sum, 0)
       ),
-      finalTotal: Math.round(finalTotal / 25000), // Include finalTotal
-      discount, // Include discount
-      address: current?.address,
+      finalTotal: Math.round(finalTotal),
+      discount: discount || 0,
+      address: current.address || "Chưa có địa chỉ",
       paymentMethod,
+      orderBy: current._id, // Gửi _id của user
     };
-    const response = await apiCreateOrder({ ...payload, status: "Pending" });
-    if (response.success) {
-      const allCartProducts =
-        JSON.parse(localStorage.getItem("cartProducts")) || [];
-      const remainingProducts = allCartProducts.filter(
-        (product) =>
-          !selectedProducts.find((selected) => selected._id === product._id)
-      );
-      localStorage.setItem("cartProducts", JSON.stringify(remainingProducts));
-      setIsSuccess(true);
-      setTimeout(() => {
-        Swal.fire(
-          "Thành công!",
-          "Đơn hàng của bạn đã được đặt",
-          "success"
-        ).then(() => {
-          navigate("/");
-        });
-      }, 1500);
+  
+    console.log("🚀 Payload gửi đi:", payload); // Debug để kiểm tra dữ liệu gửi lên
+  
+    try {
+      const response = await apiCreateOrder({ ...payload, status: "Pending" });
+      if (response.success) {
+        localStorage.removeItem("selectedProducts");
+        setIsSuccess(true);
+        Swal.fire("Thành công!", "Đơn hàng đã được đặt!", "success").then(() =>
+          navigate("/")
+        );
+      } else {
+        Swal.fire("Lỗi!", response.message || "Không thể tạo đơn hàng!", "error");
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo đơn hàng:", error);
+      Swal.fire("Lỗi!", "Lỗi server khi tạo đơn hàng!", "error");
     }
   };
+  
+  
 
 
   const handleApplyCoupon = async () => {
@@ -131,15 +143,15 @@ const Checkout = ({ dispatch, navigate }) => {
                 </tr>
               </thead>
               <tbody>
-                {selectedProducts?.map((el) => (
+                {selectedProducts?.map((el, index) => (
                   <tr
                     className="border-b border-gray-300 hover:bg-gray-50"
-                    key={el._id}
+                    key={el._id || index}
                   >
                     <td className="p-3">{el.title}</td>
                     <td className="p-3 text-center">{el.quantity}</td>
-                    <td className="p-3 text-right">
-                      {formatMoney(el.price * el.quantity) + " VNĐ"}
+                    <td className="p-3 text-right flex flex-col">
+                      {formatMoney(el.price) + " VNĐ"} {el.note && <span className="text-red-500 text-sm ml-2">({el.note})</span>}
                     </td>
                   </tr>
                 ))}
