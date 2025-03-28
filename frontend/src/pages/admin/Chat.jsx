@@ -32,40 +32,8 @@ const Chat = () => {
     const [localIsTyping, setLocalIsTyping] = useState(false)
     const lastTypingTimeRef = useRef(null)
 
-    console.log("Current user role: ", current.role)
-
     // Use debounce for search query
     const queriesDebounce = useDebounce(queries.q, 800)
-
-    const fetchUsers = useCallback(async (params = {}) => {
-        try {
-            const res = await apiGetUsers({ 
-                ...params, 
-                limit: process.env.REACT_APP_LIMIT,
-                role: [1945, 1980]
-            })
-            
-            if (res?.success) {
-                // Log full user details for debugging
-                console.log("All fetched users:", res.users.map(u => ({
-                    id: u._id,
-                    firstname: u.firstname,
-                    lastname: u.lastname,
-                    role: u.role,
-                    fullUser: u
-                    }))
-                )
-                const filteredUsers = res.users.filter(u => 
-                    u._id !== current._id 
-                )
-                                
-                setUsers(filteredUsers)
-                setFilteredUsers(filteredUsers)
-            }
-        } catch (error) {
-            console.error('Error fetching users:', error)
-        }
-    }, [current._id])
 
     // Scroll to bottom when messages change
     useEffect(() => {
@@ -160,7 +128,25 @@ const Chat = () => {
     }, [])
 
     // Fetch users with search functionality
-
+    const fetchUsers = useCallback(async (params = {}) => {
+        try {
+            const res = await apiGetUsers({ 
+                ...params, 
+                limit: process.env.REACT_APP_LIMIT,
+                role: [1945, 1980]
+            })
+            
+            if (res?.success) {
+                const filteredUsers = res.users.filter(u => 
+                    u._id !== current._id 
+                )    
+                setUsers(filteredUsers)
+                setFilteredUsers(filteredUsers)
+            }
+        } catch (error) {
+            console.error('Error fetching users:', error)
+        }
+    }, [current._id])
 
     // Initial fetches
     useEffect(() => {
@@ -202,7 +188,7 @@ const Chat = () => {
 
                 // Emit message via socket
                 socket.emit('send-message', messageToSend)
-                
+                console.log(messageToSend)
                 // Clear input
                 setNewMessage('')
                 // Reset typing states
