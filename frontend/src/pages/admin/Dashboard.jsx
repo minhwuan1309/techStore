@@ -52,18 +52,34 @@ const Dashboard = () => {
     ],
   }
   return (
-    <div className={`w-full flex flex-col gap-4 relative ${darkMode ? "bg-gray-900 text-gray-200" : "bg-gray-50 text-gray-900"}`}>
-      <div className="h-[69px] w-full"></div>
-      <div className={`p-4 border-b w-full fixed top-0 ${darkMode ? "bg-gray-800" : "bg-gray-50"}`}>
+    <div className={`
+      w-full h-full rounded-2xl backdrop-blur-xl shadow-2xl 
+      ${darkMode 
+        ? "bg-gray-800/60 border-gray-700/50 text-gray-200" 
+        : "bg-white/60 border-gray-200/50 text-gray-900"}
+      border p-4 space-y-4
+    `}>
+      <div className={`
+        p-4 border-b w-full 
+        ${darkMode 
+          ? "bg-gray-800/60 border-gray-700/50" 
+          : "bg-white/60 border-gray-200/50"}
+      `}>
         <h1 className="text-3xl font-bold tracking-tight">Tổng quát</h1>
       </div>
-      <div className="px-4">
+      
+      <div className="px-4 space-y-6">
         <div className="grid grid-cols-4 gap-4">
           <BoxInfo
             text="Số thành viên mới"
             icon={<AiOutlineUserAdd size={22} />}
             number={data?.users?.[0]?.count || 0}
-            className="border-blue-500 text-white bg-blue-500"
+            className={`
+              border rounded-xl 
+              ${darkMode 
+                ? "bg-blue-900/50 border-blue-700/50 text-blue-200" 
+                : "bg-blue-500/20 border-blue-500/50 text-blue-700"}
+            `}
           />
           <BoxInfo
             text="Số tiền đã được thanh toán"
@@ -72,8 +88,13 @@ const Dashboard = () => {
               data?.totalSuccess?.[0]?.count
                 ? formatMoney(Math.round(data?.totalSuccess[0]?.count))
                 : 0
-            }a
-            className="border-green-500 text-white bg-green-500"
+            }
+            className={`
+              border rounded-xl 
+              ${darkMode 
+                ? "bg-green-900/50 border-green-700/50 text-green-200" 
+                : "bg-green-500/20 border-green-500/50 text-green-700"}
+            `}
           />
           <BoxInfo
             text="Số tiền chưa thanh toán"
@@ -83,16 +104,33 @@ const Dashboard = () => {
                 ? formatMoney(Math.round(data?.totalFailed[0]?.count))
                 : 0
             }
-            className="border-orange-500 text-white bg-orange-500"
+            className={`
+              border rounded-xl 
+              ${darkMode 
+                ? "bg-orange-900/50 border-orange-700/50 text-orange-200" 
+                : "bg-orange-500/20 border-orange-500/50 text-orange-700"}
+            `}
           />
           <BoxInfo
             text="Số sản phẩm đã bán"
             number={data?.soldQuantities?.[0]?.count || 0}
-            className="border-yellow-500 text-white bg-yellow-500"
+            className={`
+              border rounded-xl 
+              ${darkMode 
+                ? "bg-yellow-900/50 border-yellow-700/50 text-yellow-200" 
+                : "bg-yellow-500/20 border-yellow-500/50 text-yellow-700"}
+            `}
           />
         </div>
-        <div className="mt-6 grid grid-cols-10 gap-4">
-          <div className="col-span-7 min-h-[500px] border flex flex-col gap-4 relative rounded-md flex-auto p-4">
+        
+        <div className="grid grid-cols-10 gap-4">
+          <div className={`
+            col-span-7 min-h-[500px] rounded-xl border 
+            ${darkMode 
+              ? "bg-gray-900/50 border-gray-700/50" 
+              : "bg-white/50 border-gray-200/50"}
+            flex flex-col gap-4 p-4
+          `}>
             <div className="flex items-center justify-between">
               <span className="font-bold flex items-center gap-8">
                 <span>{`Thông kê doanh thu theo ${
@@ -111,6 +149,12 @@ const Dashboard = () => {
                         }))
                       }
                       id="from"
+                      className={`
+                        rounded-md p-1 
+                        ${darkMode 
+                          ? "bg-gray-700 text-gray-200 border-gray-600" 
+                          : "bg-white border-gray-300"}
+                      `}
                     />
                   </span>
                   <span className="flex items-center gap-2">
@@ -125,32 +169,57 @@ const Dashboard = () => {
                         }))
                       }
                       id="to"
+                      className={`
+                        rounded-md p-1 
+                        ${darkMode 
+                          ? "bg-gray-700 text-gray-200 border-gray-600" 
+                          : "bg-white border-gray-300"}
+                      `}
                     />
                   </span>
                   <button
                     type="button"
-                    className={`px-4 py-2 rounded-md border-blue-500 text-blue-500 border`}
+                    className={`
+                      px-4 py-2 rounded-md border 
+                      ${darkMode 
+                        ? "border-blue-500 text-blue-500 hover:bg-blue-900/50" 
+                        : "border-blue-500 text-blue-500 hover:bg-blue-100"}
+                    `}
                     onClick={handleCustomTime}
                   >
                     Mặc định
                   </button>
                 </div>
               </span>
-              <span className="flex items-center">
+              <span className="flex items-center gap-2">
                 <button
                   type="button"
-                  className={`px-4 py-2 rounded-md border hover:border-main-blue ${
-                    isMonth ? "" : "text-white font-semibold bg-main"
-                  }`}
+                  className={`
+                    px-4 py-2 rounded-md border 
+                    ${darkMode 
+                      ? (isMonth 
+                          ? "border-gray-600 text-gray-400" 
+                          : "bg-blue-900/50 border-blue-500 text-blue-500")
+                      : (isMonth 
+                          ? "border-gray-300 text-gray-500" 
+                          : "bg-blue-500 text-white")}
+                  `}
                   onClick={() => setIsMonth(false)}
                 >
                   Ngày
                 </button>
                 <button
                   type="button"
-                  className={`px-4 py-2 rounded-md border hover:border-main-blue ${
-                    isMonth ? "text-white font-semibold bg-main" : ""
-                  }`}
+                  className={`
+                    px-4 py-2 rounded-md border 
+                    ${darkMode 
+                      ? (isMonth 
+                          ? "bg-blue-900/50 border-blue-500 text-blue-500" 
+                          : "border-gray-600 text-gray-400")
+                      : (isMonth 
+                          ? "bg-blue-500 text-white" 
+                          : "border-gray-300 text-gray-500")}
+                  `}
                   onClick={() => setIsMonth(true)}
                 >
                   Tháng
@@ -165,7 +234,13 @@ const Dashboard = () => {
               />
             )}
           </div>
-          <div className="col-span-3 rounded-md border p-4 text-center">
+          <div className={`
+            col-span-3 rounded-xl border 
+            ${darkMode 
+              ? "bg-gray-900/50 border-gray-700/50" 
+              : "bg-white/50 border-gray-200/50"}
+            p-4 text-center
+          `}>
             <span className="font-bold gap-8">
               Thống kê tổng đơn đã đặt và đơn huỷ
             </span>

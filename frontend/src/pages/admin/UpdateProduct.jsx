@@ -86,7 +86,6 @@ const UpdateProduct = ({ editProduct, render, setEditProduct }) => {
         const formData = new FormData();
         for (let [key, value] of Object.entries(finalPayload)) {
           if (key === "images") {
-
             for (let image of value) {
               formData.append("images", image);
             }
@@ -112,155 +111,162 @@ const UpdateProduct = ({ editProduct, render, setEditProduct }) => {
     };
 
     return (
-      <div className="w-full flex flex-col gap-4 relative">
-        <div className="h-[69px] w-full"></div>
-        <div className="p-4 border-b bg-gray-100 flex justify-between items-center right-0 left-[327px] fixed top-0">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Cập nhật sản phẩm
-          </h1>
-          <span
-            className="text-main hover:underline cursor-pointer"
-            onClick={() => setEditProduct(null)}
-          >
-            Quay lại
-          </span>
-        </div>
-        <div className="p-4">
-          <form onSubmit={handleSubmit(handleUpdateProduct)}>
-            <InputForm
-              label="Tên sản phẩm"
-              register={register}
-              errors={errors}
-              id="title"
-              validate={{
-                required: "Need fill this field",
-              }}
-              fullWidth
-              placeholder="Nhập tên sản phẩm"
-            />
-            <div className="w-full my-6 flex gap-4">
-              <InputForm
-                label="Giá tiền"
-                register={register}
-                errors={errors}
-                id="price"
-                validate={{
-                  required: "Need fill this field",
-                }}
-                style="flex-auto"
-                placeholder="Giá..."
-                type="number"
-              />
-              <InputForm
-                label="Số lượng"
-                register={register}
-                errors={errors}
-                id="quantity"
-                validate={{
-                  required: "Need fill this field",
-                }}
-                style="flex-auto"
-                placeholder="..."
-                type="number"
-              />
-              <InputForm
-                label="Màu sắc"
-                register={register}
-                errors={errors}
-                id="color"
-                validate={{
-                  required: "Need fill this field",
-                }}
-                style="flex-auto"
-                placeholder="Đen,..."
-              />
-            </div>
-            <div className="w-full my-6 flex gap-4">
-              <Select
-                label="Loại sản phẩm"
-                options={categories
-                  ?.slice() // Tạo một bản sao của mảng
-                  ?.sort((a, b) => a.title.localeCompare(b.title)) // Sort categories alphabetically
-                  ?.map((el) => ({ code: el.title, value: el.title }))}
-                register={register}
-                id="category"
-                validate={{ required: "Need fill this field" }}
-                style="flex-auto"
-                errors={errors}
-                fullWidth
-              />
-              <Select
-                label="Thương hiệu"
-                options={categories
-                  ?.find((el) => el.title === watch("category"))
-                  ?.brand?.slice()?.sort((a, b) => a.localeCompare(b)) // Sort brands alphabetically
-                  .map((el) => ({ code: el.toLowerCase(), value: el }))}
-                register={register}
-                id="brand"
-                style="flex-auto"
-                errors={errors}
-                fullWidth
-              />
-            </div>
-            <MarkdownEditor
-              name="description"
-              changeValue={changeValue}
-              label="Mô tả"
-              invalidFields={invalidFields}
-              setInvalidFields={setInvalidFields}
-              value={payload.description}
-            />
-            <div className="flex flex-col gap-2 mt-8">
-              <label className="font-semibold" htmlFor="thumb">
-                Ảnh đại diện
-              </label>
-              <input type="file" id="thumb" {...register("thumb")} />
-              {errors["thumb"] && (
-                <small className="text-xs text-red-500">
-                  {errors["thumb"]?.message}
-                </small>
-              )}
-            </div>
-            {preview.thumb && (
-              <div className="my-4">
-                <img
-                  src={preview.thumb}
-                  alt="thumbnail"
-                  className="w-[200px] object-contain"
-                />
-              </div>
-            )}
-            <div className="flex flex-col gap-2 mt-8">
-              <label className="font-semibold" htmlFor="products">
-                Hình ảnh sản phẩm
-              </label>
+      <div className="w-full min-h-screen bg-gradient-to-br from-purple-100 to-pink-100 p-8">
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 flex justify-between items-center">
+            <h1 className="text-3xl font-bold tracking-tight">
+              Cập nhật sản phẩm
+            </h1>
+            <span
+              className="cursor-pointer hover:underline"
+              onClick={() => setEditProduct(null)}
+            >
+              Quay lại
+            </span>
+          </div>
+          
+          <form onSubmit={handleSubmit(handleUpdateProduct)} className="p-8 space-y-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Tên sản phẩm</label>
               <input
-                type="file"
-                id="products"
-                multiple
-                {...register("images")}
+                {...register("title", { required: "Không được để trống" })}
+                className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50/50"
+                placeholder="Nhập tên sản phẩm"
               />
-              {errors["images"] && (
-                <small className="text-xs text-red-500">
-                  {errors["images"]?.message}
-                </small>
-              )}
+              {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
             </div>
-            {preview.images.length > 0 && (
-              <div className="my-4 flex w-full gap-3 flex-wrap">
-                {preview.images?.map((el, idx) => (
-                  <div key={idx} className="w-fit relative">
-                    <img
-                      src={el}
-                      alt="product"
-                      className="w-[200px] object-contain"
-                    />
-                  </div>
-                ))}
+
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Giá tiền</label>
+                <input
+                  type="number"
+                  {...register("price", { required: "Không được để trống" })}
+                  className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50/50"
+                  placeholder="Giá..."
+                />
+                {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
               </div>
-            )}
-            <div className="my-6">
-              <Button type="submit">Cập nhật</Button>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Số lượng</label>
+                <input
+                  type="number"
+                  {...register("quantity", { required: "Không được để trống" })}
+                  className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50/50"
+                  placeholder="..."
+                />
+                {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Màu sắc</label>
+                <input
+                  {...register("color", { required: "Không được để trống" })}
+                  className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50/50"
+                  placeholder="Đen,..."
+                />
+                {errors.color && <p className="text-red-500 text-xs mt-1">{errors.color.message}</p>}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Loại sản phẩm</label>
+                <select
+                  {...register("category", { required: "Không được để trống" })}
+                  className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50/50"
+                >
+                  {categories
+                    ?.slice()
+                    ?.sort((a, b) => a.title.localeCompare(b.title))
+                    ?.map((el) => (
+                      <option key={el._id} value={el.title}>
+                        {el.title}
+                      </option>
+                    ))}
+                </select>
+                {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Thương hiệu</label>
+                <select
+                  {...register("brand")}
+                  className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50/50"
+                >
+                  {categories
+                    ?.find((el) => el.title === watch("category"))
+                    ?.brand?.slice()
+                    ?.sort((a, b) => a.localeCompare(b))
+                    ?.map((el) => (
+                      <option key={el} value={el.toLowerCase()}>
+                        {el}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Mô tả</label>
+              <MarkdownEditor
+                name="description"
+                changeValue={changeValue}
+                value={payload.description}
+                label=""
+                invalidFields={invalidFields}
+                setInvalidFields={setInvalidFields}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Ảnh đại diện</label>
+                <input 
+                  type="file" 
+                  {...register("thumb")}
+                  className="w-full px-4 py-2 border border-purple-200 rounded-lg file:mr-4 file:rounded-full file:border-0 file:bg-purple-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-purple-700 hover:file:bg-purple-100"
+                />
+                {preview.thumb && (
+                  <img 
+                    src={preview.thumb} 
+                    alt="Thumbnail" 
+                    className="mt-2 w-32 h-32 object-cover rounded-lg border-2 border-purple-200" 
+                  />
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Hình ảnh sản phẩm</label>
+                <input 
+                  type="file" 
+                  multiple 
+                  {...register("images")}
+                  className="w-full px-4 py-2 border border-purple-200 rounded-lg file:mr-4 file:rounded-full file:border-0 file:bg-purple-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-purple-700 hover:file:bg-purple-100"
+                />
+                {preview.images.length > 0 && (
+                  <div className="mt-2 flex gap-2">
+                    {preview.images.map((img, idx) => (
+                      <img 
+                        key={idx} 
+                        src={img} 
+                        alt={`Product ${idx + 1}`} 
+                        className="w-32 h-32 object-cover rounded-lg border-2 border-purple-200" 
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white py-3 rounded-lg hover:from-purple-700 hover:to-pink-600 transition-all duration-300"
+              >
+                Cập nhật sản phẩm
+              </button>
             </div>
           </form>
         </div>

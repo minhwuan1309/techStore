@@ -6,6 +6,7 @@ import { validate, getBase64 } from "utils/helpers";
 import { toast } from "react-toastify";
 import { apiCreateProduct } from "apis";
 import { showModal } from "store/app/appSlice";
+import clsx from 'clsx';
 
 const CreateProducts = () => {
   const { categories } = useSelector((state) => state.app);
@@ -79,9 +80,11 @@ const CreateProducts = () => {
     }
   };
   return (
-    <div className="w-full">
-      <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
-        <span>Thêm sản phẩm mới</span>
+    <div className="w-full bg-white/30 backdrop-blur-xl rounded-2xl p-6 shadow-2xl">
+      <h1 className="flex justify-between items-center text-3xl font-bold mb-6 pb-4 border-b-2 border-transparent">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
+          Thêm sản phẩm mới
+        </span>
       </h1>
       <div className="p-4">
         <form onSubmit={handleSubmit(handleCreateProduct)}>
@@ -134,12 +137,11 @@ const CreateProducts = () => {
             />
           </div>
           <div className="w-full my-6 flex gap-4">
-            {/* Category Select */}
             <Select
               label="Loại sản phẩm"
               options={categories
-                ?.slice() // Tạo một bản sao của mảng
-                ?.sort((a, b) => a.title.localeCompare(b.title)) // Sort categories alphabetically
+                ?.slice()
+                ?.sort((a, b) => a.title.localeCompare(b.title))
                 ?.map((el) => ({
                   code: el._id,
                   value: el.title,
@@ -152,13 +154,12 @@ const CreateProducts = () => {
               fullWidth
             />
 
-            {/* Brand Select */}
             <Select
               label="Thương hiệu"
               options={categories
                 ?.find((el) => el._id === watch("category"))
-                ?.brand?.slice() // Tạo một bản sao của mảng
-                ?.sort((a, b) => a.localeCompare(b)) // Sort brands alphabetically
+                ?.brand?.slice()
+                ?.sort((a, b) => a.localeCompare(b))
                 ?.map((el) => ({ code: el, value: el }))}
               register={register}
               id="brand"
@@ -176,12 +177,13 @@ const CreateProducts = () => {
             setInvalidFields={setInvalidFields}
           />
           <div className="flex flex-col gap-2 mt-8">
-            <label className="font-semibold" htmlFor="thumb">
+            <label className="font-semibold text-purple-600" htmlFor="thumb">
               Ảnh đại diện của sản phẩm
             </label>
             <input
               type="file"
               id="thumb"
+              className="file:mr-4 file:rounded-full file:border-0 file:bg-purple-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-purple-700 hover:file:bg-purple-100"
               {...register("thumb", { required: "Need fill" })}
             />
             {errors["thumb"] && (
@@ -191,22 +193,23 @@ const CreateProducts = () => {
             )}
           </div>
           {preview.thumb && (
-            <div className="my-4">
+            <div className="my-4 border-2 border-purple-200 rounded-lg p-2 inline-block">
               <img
                 src={preview.thumb}
                 alt="thumbnail"
-                className="w-[200px] object-contain"
+                className="w-[200px] object-contain rounded-md"
               />
             </div>
           )}
           <div className="flex flex-col gap-2 mt-8">
-            <label className="font-semibold" htmlFor="products">
+            <label className="font-semibold text-purple-600" htmlFor="products">
               Hình ảnh khác
             </label>
             <input
               type="file"
               id="products"
               multiple
+              className="file:mr-4 file:rounded-full file:border-0 file:bg-purple-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-purple-700 hover:file:bg-purple-100"
               {...register("images", { required: "Need fill" })}
             />
             {errors["images"] && (
@@ -218,18 +221,23 @@ const CreateProducts = () => {
           {preview.images.length > 0 && (
             <div className="my-4 flex w-full gap-3 flex-wrap">
               {preview.images?.map((el, idx) => (
-                <div key={idx} className="w-fit relative">
+                <div key={idx} className="w-fit relative border-2 border-purple-200 rounded-lg p-2">
                   <img
                     src={el.path}
                     alt="product"
-                    className="w-[200px] object-contain"
+                    className="w-[200px] object-contain rounded-md"
                   />
                 </div>
               ))}
             </div>
           )}
           <div className="my-6">
-            <Button type="submit">Tạo sản phẩm mới</Button>
+            <Button 
+              type="submit" 
+              className="bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 transition-all duration-300"
+            >
+              Tạo sản phẩm mới
+            </Button>
           </div>
         </form>
       </div>

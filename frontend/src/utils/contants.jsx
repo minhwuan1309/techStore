@@ -182,18 +182,18 @@ export const adminSidebar = [
     icon: <AiOutlineDashboard size={20} />,
   },
   {
-    id: 2,
-    type: "SINGLE",
-    text: "Quản lý tài khoản",
-    path: `/${path.ADMIN}/${path.MANAGE_USER}`,
-    icon: <MdGroups size={20} />,
-  },
-  {
     id: 9,
     type: "SINGLE",
     text: "Thông tin cá nhân",
     path: `/${path.ADMIN}/${path.ADMIN_PERSONAL}`,
     icon: <FaIdCard size={20} />,
+  },
+  {
+    id: 2,
+    type: "SINGLE",
+    text: "Quản lý tài khoản",
+    path: `/${path.ADMIN}/${path.MANAGE_USER}`,
+    icon: <MdGroups size={20} />,
   },
   {
     id: 3,
@@ -212,13 +212,6 @@ export const adminSidebar = [
     ],
   },
   {
-    id: 4,
-    type: "SINGLE",
-    text: "Quản lý đơn hàng",
-    path: `/${path.ADMIN}/${path.MANAGE_ORDER}`,
-    icon: <RiBillLine size={20} />,
-  },
-  {
     id: 5,
     type: "PARENT",
     text: "Loại sản phẩm",
@@ -234,7 +227,20 @@ export const adminSidebar = [
       },
     ],
   },
-  
+  {
+    id: 4,
+    type: "SINGLE",
+    text: "Quản lý đơn hàng",
+    path: `/${path.ADMIN}/${path.MANAGE_ORDER}`,
+    icon: <RiBillLine size={20} />,
+  },
+  {
+    id: 8,
+    type: "SINGLE",
+    text: "Khuyến mãi",
+    path: `/${path.ADMIN}/${path.MANAGE_COUPON}`,
+    icon: <RiCoupon2Fill size={20}/>
+  },
   {
     id: 6,
     type: "PARENT",
@@ -258,14 +264,8 @@ export const adminSidebar = [
     path: `/${path.ADMIN}/${path.CHAT}`,
     icon: <RiChatSmile3Line size={20} />,
   },
-  {
-    id: 8,
-    type: "SINGLE",
-    text: "Khuyến mãi",
-    path: `/${path.ADMIN}/${path.MANAGE_COUPON}`,
-    icon: <RiCoupon2Fill size={20}/>
-  },
-];
+]
+
 export const memberSidebar = [
   {
     id: 1,
