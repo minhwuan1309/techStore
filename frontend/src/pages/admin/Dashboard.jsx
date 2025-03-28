@@ -37,7 +37,7 @@ const Dashboard = () => {
     setCustomTime({ from: "", to: "" })
   }
   const pieData = {
-    labels: ["Tổng đơn đã hủy", "Tổng đơn thành công"],
+    labels: ["Tổng đơn đã hủy", "Tổng đơn đặt hàng"],
     datasets: [
       {
         label: "Tổng đơn",
@@ -70,7 +70,7 @@ const Dashboard = () => {
             icon={<img src="/dong.svg" className="h-6 object-contain" />}
             number={
               data?.totalSuccess?.[0]?.count
-                ? formatMoney(Math.round(data?.totalSuccess[0]?.count * 25000))
+                ? formatMoney(Math.round(data?.totalSuccess[0]?.count))
                 : 0
             }a
             className="border-green-500 text-white bg-green-500"
@@ -80,7 +80,7 @@ const Dashboard = () => {
             icon={<img src="/dong.svg" className="h-6 object-contain" />}
             number={
               data?.totalFailed?.[0]?.count
-                ? formatMoney(Math.round(data?.totalFailed[0]?.count * 25000))
+                ? formatMoney(Math.round(data?.totalFailed[0]?.count))
                 : 0
             }
             className="border-orange-500 text-white bg-orange-500"
@@ -167,7 +167,7 @@ const Dashboard = () => {
           </div>
           <div className="col-span-3 rounded-md border p-4 text-center">
             <span className="font-bold gap-8">
-              Thống kê tổng đơn đã huỷ và đơn thành công
+              Thống kê tổng đơn đã đặt và đơn huỷ
             </span>
             <div>
               <Pie data={pieData} />;

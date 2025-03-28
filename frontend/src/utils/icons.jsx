@@ -1,7 +1,7 @@
 import { RiPhoneFill, RiTruckFill, RiBillLine } from 'react-icons/ri'
 import { MdEmail, MdGroups } from 'react-icons/md'
 import { BsHandbagFill, BsFillSuitHeartFill, BsShieldShaded, BsReplyFill, BsCartPlus } from 'react-icons/bs'
-import { FaUserCircle, FaTty } from 'react-icons/fa'
+import { FaUserCircle, FaTty, FaIdCard } from 'react-icons/fa'
 import {
     AiFillHome,
     AiFillStar,

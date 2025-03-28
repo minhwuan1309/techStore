@@ -1,6 +1,7 @@
 import path from "./path"
 import icons from "./icons"
 import { RiChatSmile3Line, RiCoupon2Fill } from "react-icons/ri";
+import { FaIdCard } from "react-icons/fa";
 
 export const navigation = [
   {
@@ -186,6 +187,13 @@ export const adminSidebar = [
     text: "Quản lý tài khoản",
     path: `/${path.ADMIN}/${path.MANAGE_USER}`,
     icon: <MdGroups size={20} />,
+  },
+  {
+    id: 9,
+    type: "SINGLE",
+    text: "Thông tin cá nhân",
+    path: `/${path.ADMIN}/${path.ADMIN_PERSONAL}`,
+    icon: <FaIdCard size={20} />,
   },
   {
     id: 3,

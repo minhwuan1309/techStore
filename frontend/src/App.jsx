@@ -41,7 +41,9 @@ import BlogsPage from "pages/public/Blogs"
 import CreateCategory from "pages/admin/CreateCategory"
 import ManageCategories from "pages/admin/ManageCategories"
 import ManageCoupon from "pages/admin/ManageCoupon"
-// import Chat from "pages/admin/Chat"
+import ConfirmOrder from "pages/user/ConfirmOrder";
+import Chat from "pages/admin/Chat"
+import AdminPersonal from "pages/admin/AdminPersonal";
 
 
 function App() {
@@ -81,6 +83,7 @@ function App() {
         </Route>
         <Route path={path.ADMIN} element={<AdminLayout />}>
           <Route path={path.DASHBOARD} element={<Dashboard />} />
+          <Route path={path.ADMIN_PERSONAL} element={<AdminPersonal />} />
           <Route path={path.MANAGE_ORDER} element={<ManageOrder />} />
           <Route path={path.MANAGE_PRODUCTS} element={<ManageProducts />} />
           <Route path={path.MANAGE_USER} element={<ManageUser />} />
@@ -90,13 +93,15 @@ function App() {
           <Route path={path.CREATE_CATEGORY} element={<CreateCategory />} />
           <Route path={path.MANAGE_CATEGORIES} element={<ManageCategories />} />
           <Route path={path.MANAGE_COUPON} element={<ManageCoupon/>}/>
-          {/* <Route path={path.CHAT} element = {<Chat/>}/> */}
+          <Route path={path.CHAT} element = {<Chat/>}/>
         </Route>
         <Route path={path.MEMBER} element={<MemberLayout />}>
           <Route path={path.PERSONAL} element={<Personal />} />
           <Route path={path.MY_CART} element={<DetailCart />} />
           <Route path={path.WISHLIST} element={<Wishlist />} />
           <Route path={path.HISTORY} element={<History />} />
+          <Route path={path.CONFIRM_ORDER} element={<ConfirmOrder />} />
+
         </Route>
         <Route path={path.FINAL_REGISTER} element={<FinalRegister />} />
         <Route path={path.LOGIN} element={<Login />} />

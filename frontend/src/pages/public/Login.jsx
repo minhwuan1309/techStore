@@ -52,7 +52,7 @@ const Login = () => {
     const response = await apiForgotPassword({ email })
     if (response.success) {
       toast.success(response.mes, { theme: "colored" })
-      setIsResetPassword(true) // Chuyển sang giao diện reset password
+      setIsResetPassword(true)
     } else toast.info(response.mes, { theme: "colored" })
   }
   
@@ -67,7 +67,6 @@ const Login = () => {
       toast.success(response.mes, { theme: 'colored' })
       setIsResetPassword(false)
       setIsForgotPassword(false)
-      // Reset các trường nhập liệu
       setNewPassword("")
       setConfirmNewPassword("")
       setResetToken("")
@@ -320,6 +319,9 @@ const Login = () => {
               isHideLabel={true}
               fullWidth
               style="p-3 border rounded-md focus:border-indigo-500 transition-colors"
+              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+              title="Vui lòng nhập email hợp lệ (ví dụ: example@email.com)"
+              type="email"
             />
           </div>
           {isRegister && (
@@ -334,6 +336,9 @@ const Login = () => {
                 isHideLabel={true}
                 fullWidth
                 style="p-3 border rounded-md focus:border-indigo-500 transition-colors"
+                pattern="^[0-9]+$"
+                title="Chỉ được nhập số điện thoại hợp lệ (chỉ chứa số)"
+                type="tel"
               />
             </div>
           )}

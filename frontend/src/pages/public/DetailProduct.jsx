@@ -165,16 +165,16 @@ const handleClickImage = (el) => {
   }
 
   return (
-    <div className={clsx("w-full")}>
+    <div className={clsx("w-full bg-gray-50")}>
       {!isQuickView && (
-        <div className="h-[81px] flex justify-center items-center bg-gray-100">
+        <div className="h-[81px] flex justify-center items-center bg-white shadow-sm">
           <div ref={titleRef} className="w-main">
-            <h3 className="font-semibold">
+            <h3 className="font-bold text-xl text-gray-800">
               {currentProduct.title || product?.title}
             </h3>
             <Breadcrumb
-              title={currentProduct.title || product?.title} // Truyền tiêu đề sản phẩm
-              category={params.category || product?.category} // Truyền danh mục sản phẩm
+              title={currentProduct.title || product?.title}
+              category={params.category || product?.category}
             />
           </div>
         </div>
@@ -182,16 +182,16 @@ const handleClickImage = (el) => {
       <div
         onClick={(e) => e.stopPropagation()}
         className={clsx(
-          "bg-white m-auto mt-4 flex",
+          "bg-white rounded-lg shadow-md m-auto mt-6 flex p-6",
           isQuickView
-            ? "max-w-[900px] gap-16 p-8 max-h-[80vh] overflow-y-auto"
+            ? "max-w-[1000px] gap-16 max-h-[80vh] overflow-y-auto"
             : "w-main"
         )}
       >
         <div
-          className={clsx("flex flex-col gap-4 w-2/5", isQuickView && "w-1/2")}
+          className={clsx("flex flex-col gap-6 w-2/5", isQuickView && "w-1/2")}
         >
-          <div className="w-[458px] h-[458px] border flex items-center overflow-hidden">
+          <div className="w-full aspect-square border-2 border-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
             <ReactImageMagnify
               {...{
                 smallImage: {
@@ -204,24 +204,25 @@ const handleClickImage = (el) => {
                   width: 1800,
                   height: 1500,
                 },
+                enlargedImageContainerClassName: 'z-50'
               }}
             />
           </div>
-          <div className="w-[458px]">
+          <div className="w-full">
             <Slider
-              className="image-slider flex gap-2 justify-between"
+              className="image-slider flex gap-4 justify-between"
               {...settings}
             >
               {currentProduct.images?.length > 0 &&
                 currentProduct.images.map((el, index) => (
-                  <div className="flex-1" key={index}>
+                  <div className="flex-1 p-1" key={index}>
                     <img
                       onClick={() => handleClickImage(el)}
                       src={el}
                       alt="sub-product"
                       className={clsx(
-                        "w-[143px] h-[143px] cursor-pointer border rounded-md object-cover hover:shadow-lg transition-all",
-                        currentImage === el && "border-red-500"
+                        "w-full aspect-square cursor-pointer border-2 rounded-lg object-cover hover:shadow-lg transition-all",
+                        currentImage === el ? "border-red-500" : "border-gray-200"
                       )}
                     />
                   </div>
@@ -231,62 +232,70 @@ const handleClickImage = (el) => {
         </div>
         <div
           className={clsx(
-            "w-full md:w-2/5 lg:w-1/2 pr-[24px] flex flex-col gap-6",
+            "w-full md:w-2/5 lg:w-1/2 pl-8 flex flex-col gap-6",
             isQuickView && "lg:w-1/5"
           )}
         >
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl lg:text-3xl font-semibold text-gray-800">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-3xl font-bold text-gray-900">
               {`${formatMoney(
                 fotmatPrice(currentProduct.price || product?.price)
               )} VNĐ`}
             </h2>
-            <span className="text-m text-main">{`Có sẵn: ${product?.quantity}`}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                {`Còn hàng: ${product?.quantity}`}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-1">
-            {renderStarFromNumber(product?.totalRatings)?.map((el, index) => (
-              <span key={index}>{el}</span>
-            ))}
-            <span className="text-sm text-gray-500 italic">{`(Đã bán: ${product?.sold})`}</span>
-          </div>
-
-          <ul className="list-disc text-sm text-gray-600 pl-4 max-h-[300px] overflow-y-auto">
-            {product?.description?.length > 1 &&
-              product?.description?.map((el) => (
-                <li className="leading-6" key={el}>
-                  {el}
-                </li>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center">
+              {renderStarFromNumber(product?.totalRatings)?.map((el, index) => (
+                <span key={index} className="text-yellow-500">{el}</span>
               ))}
-            {product?.description?.length === 1 && (
+            </div>
+            <span className="text-sm text-gray-500 ml-2">
+              {`(Đã bán: ${product?.sold})`}
+            </span>
+          </div>
+
+          <div className="max-h-[200px] overflow-y-auto text-gray-700 leading-relaxed">
+            {product?.description?.length > 1 ? (
+              <ul className="list-disc pl-5 space-y-2">
+                {product?.description?.map((el) => (
+                  <li key={el}>{el}</li>
+                ))}
+              </ul>
+            ) : (
               <div
-                className="text-sm leading-6 line-clamp-[10] mb-5"
+                className="text-sm"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(product?.description[0]),
                 }}
               ></div>
             )}
-          </ul>
+          </div>
 
-          <div className="my-4 flex flex-col gap-2">
-            <span className="font-bold text-gray-700">Màu sắc:</span>
-            <div className="flex flex-wrap gap-4 items-center w-full">
+          <div className="my-4 flex flex-col gap-3">
+            <span className="font-semibold text-gray-800">Chọn màu sắc:</span>
+            <div className="flex flex-wrap gap-4 items-center">
               <div
                 onClick={() => setVarriant(null)}
                 className={clsx(
-                  "flex items-center gap-2 p-2 border rounded-md cursor-pointer hover:shadow-lg transition-all",
-                  !varriant && "border-red-500"
+                  "flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer hover:shadow-md transition-all",
+                  !varriant ? "border-red-500 bg-red-50" : "border-gray-200"
                 )}
               >
                 <img
                   src={product?.thumb}
                   alt="thumb"
-                  className="w-10 h-10 rounded-md object-cover"
+                  className="w-12 h-12 rounded-md object-cover"
                 />
                 <span className="flex flex-col">
-                  <span className="text-gray-800">{product?.color}</span>
+                  <span className="text-gray-900 font-medium">{product?.color}</span>
                   <span className="text-sm text-gray-600">
-                    {formatMoney(fotmatPrice(product?.price))}
+                    {formatMoney(fotmatPrice(product?.price))} VNĐ
                   </span>
                 </span>
               </div>
@@ -295,29 +304,28 @@ const handleClickImage = (el) => {
                   key={el.sku}
                   onClick={() => setVarriant(el.sku)}
                   className={clsx(
-                    "flex items-center gap-2 p-2 border rounded-md cursor-pointer hover:shadow-lg transition-all",
-                    varriant === el.sku && "border-red-500"
+                    "flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer hover:shadow-md transition-all",
+                    varriant === el.sku ? "border-red-500 bg-red-50" : "border-gray-200"
                   )}
                 >
                   <img
                     src={el.thumb}
                     alt="thumb"
-                    className="w-10 h-10 rounded-md object-cover"
+                    className="w-12 h-12 rounded-md object-cover"
                   />
                   <span className="flex flex-col">
-                    <span className="text-gray-800">{el.color}</span>
-                    <span className="text-sm text-gray-600">{el.price}</span>
+                    <span className="text-gray-900 font-medium">{el.color}</span>
+                    <span className="text-sm text-gray-600">{el.price} VNĐ</span>
                   </span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Số lượng và thêm vào giỏ hàng */}
           {+current?.role !== 1945 && (
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-6">
               <div className="flex items-center gap-4">
-                <span className="font-semibold text-gray-700">Số lượng:</span>
+                <span className="font-semibold text-gray-800">Số lượng:</span>
                 <SelectQuantity
                   quantity={quantity}
                   handleQuantity={handleQuantity}
@@ -327,13 +335,14 @@ const handleClickImage = (el) => {
               <Button
                 handleOnClick={handleAddToCart}
                 fw
-                className="bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600 transition-all"
+                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-all uppercase tracking-wider font-semibold shadow-md"
               >
                 Thêm vào giỏ hàng
               </Button>
             </div>
           )}
         </div>
+
 
         {!isQuickView && (
           <div className="w-1/5">

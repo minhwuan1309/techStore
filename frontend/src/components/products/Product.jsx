@@ -38,12 +38,12 @@ const Product = ({
     if (flag === "CART") {
       if (!current)
         return Swal.fire({
-          title: "Almost...",
-          text: "Please login first!",
+          title: "Oops...",
+          text: "Mời bạn đăng nhập để thêm sản phẩm vào giỏ hàng!",
           icon: "info",
-          cancelButtonText: "Not now!",
+          cancelButtonText: "Để sau",
           showCancelButton: true,
-          confirmButtonText: "Go login page",
+          confirmButtonText: "Đến trang đăng nhập",
         }).then(async (rs) => {
           if (rs.isConfirmed)
             navigate({
@@ -62,16 +62,16 @@ const Product = ({
         title: productData?.title,
       })
       if (response.success) {
-        toast.success(response.mes)
+        toast.success("Đã thêm vào giỏ hàng")
         dispatch(getCurrent())
-      } else toast.error(response.mes)
+      } else toast.error("Có lỗi xảy ra")
     }
     if (flag === "WISHLIST") {
       const response = await apiUpdateWishlist(pid)
       if (response.success) {
         dispatch(getCurrent())
-        toast.success(response.mes)
-      } else toast.error(response.mes)
+        toast.success("Đã thêm vào danh sách yêu thích")
+      } else toast.error("Có lỗi xảy ra")
     }
     if (flag === "QUICK_VIEW") {
       dispatch(
@@ -123,14 +123,6 @@ const Product = ({
         {/* Quick Actions Overlay */}
         {isShowOption && (
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center gap-4 animate-fade-in">
-            {/* Quick View Button */}
-            <button
-              onClick={(e) => handleClickOptions(e, "QUICK_VIEW")}
-              className="w-10 h-10 rounded-full bg-white text-gray-800 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-colors duration-300"
-              title="Quick View"
-            >
-              <AiFillEye size={20} />
-            </button>
             
             {/* Add to Cart Button */}
             {!["1945", "1980"].includes(current?.role?.toString()) && (

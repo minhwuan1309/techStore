@@ -14,10 +14,12 @@ const path = {
   DETAIL_CART: "my-cart",
   CHECKOUT: "checkout",
   PRODUCTS: "products",
+  CONFIRM_ORDER: "confirm-order",
 
   // Admin
   ADMIN: "admin",
   DASHBOARD: "dashboard",
+  ADMIN_PERSONAL: "admin-personal",
   MANAGE_USER: "manage-user",
   MANAGE_PRODUCTS: "manage-products",
   MANAGE_ORDER: "manage-order",

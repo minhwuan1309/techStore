@@ -44,27 +44,41 @@ const Personal = ({ navigate }) => {
 
     return (
       <div className="w-full relative px-4">
-        <header className="text-3xl font-semibold py-4 border-b border-b-blue-200">
+        <header className="text-3xl font-semibold py-4 border-b-2 border-indigo-600 mb-8 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-3 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
           Thông tin cá nhân
         </header>
         <form
           onSubmit={handleSubmit(handleUpdateInfor)}
-          className="w-3/5 mx-auto py-8 flex flex-col gap-4"
+          className="w-3/5 mx-auto py-8 flex flex-col gap-6 bg-white rounded-lg shadow-lg p-8"
         >
-          <InputForm
-            label="Họ"
-            id="firstname"
-            register={register}
-            errors={errors}
-            fullWidth
-          />
-          <InputForm
-            label="Tên"
-            id="lastname"
-            register={register}
-            errors={errors}
-            fullWidth
-          />
+          <div className="flex justify-center mb-4">
+            <label htmlFor="file" className="cursor-pointer">
+              <img
+                src={current?.avatar || avatar}
+                alt="avatar"
+                className="w-32 h-32 object-cover rounded-full border-4 border-indigo-500 hover:scale-105 transition-transform duration-300"
+              />
+            </label>
+          </div>
+          <div className="grid grid-cols-2 gap-6">
+            <InputForm
+              label="Họ"
+              id="firstname"
+              register={register}
+              errors={errors}
+              className="col-span-1"
+            />
+            <InputForm
+              label="Tên"
+              id="lastname"
+              register={register}
+              errors={errors}
+              className="col-span-1"
+            />
+          </div>
           <InputForm
             label="Số điện thoại"
             id="mobile"
@@ -86,29 +100,19 @@ const Personal = ({ navigate }) => {
             errors={errors}
             fullWidth
           />
-          <label
-            htmlFor="avatar"
-            className="block text-lg font-medium text-gray-700"
-          >
-            Ảnh đại diện
-          </label>
-          <label htmlFor="file">
-            <img
-              src={current?.avatar || avatar}
-              alt="avatar"
-              className="w-20 h-20 ml-8 object-cover rounded-full"
-            />
-          </label>
           <input
             type="file"
             id="avatar"
             {...register("avatar")}
-            className="mt-2 p-2 border rounded-md w-full"
+            className="mt-2 p-2 border rounded-md w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
           />
           <Button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg"
+            className="w-full bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 flex items-center justify-center"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
             Cập nhật thông tin
           </Button>
         </form>

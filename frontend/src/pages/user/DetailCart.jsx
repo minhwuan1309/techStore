@@ -1,20 +1,20 @@
-import { Breadcrumb, Button } from "components";
-import OrderItem from "components/products/OrderItem";
-import withBaseComponent from "hocs/withBaseComponent";
-import { useSelector, useDispatch } from "react-redux";
-import { Link, createSearchParams } from "react-router-dom";
-import Swal from "sweetalert2";
-import { formatMoney } from "utils/helpers";
-import path from "utils/path";
-import { updateCart, removeFromCart } from "store/user/userSlice";
-import { useState, useCallback } from "react";
-import { apiRemoveCart } from "apis";
-import { getCurrent } from "store/user/asyncActions";
+import { Breadcrumb, Button } from "components"
+import OrderItem from "components/products/OrderItem"
+import withBaseComponent from "hocs/withBaseComponent"
+import { useSelector, useDispatch } from "react-redux"
+import { Link, createSearchParams } from "react-router-dom"
+import Swal from "sweetalert2"
+import { formatMoney } from "utils/helpers"
+import path from "utils/path"
+import { updateCart, removeFromCart } from "store/user/userSlice"
+import { useState, useCallback } from "react"
+import { apiRemoveCart } from "apis"
+import { getCurrent } from "store/user/asyncActions"
 
 const DetailCart = ({ location, navigate }) => {
-  const dispatch = useDispatch();
-  const { currentCart, current } = useSelector((state) => state.user);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const dispatch = useDispatch()
+  const { currentCart, current } = useSelector((state) => state.user)
+  const [selectedProducts, setSelectedProducts] = useState([])
 
   const handleSubmit = () => {
     if (!selectedProducts.length) {
@@ -23,7 +23,7 @@ const DetailCart = ({ location, navigate }) => {
         title: "Chưa chọn sản phẩm",
         text: "Vui lòng chọn ít nhất một sản phẩm để thanh toán.",
         confirmButtonText: "Đã hiểu",
-      });
+      })
     }
 
     if (!current?.address) {
@@ -41,15 +41,18 @@ const DetailCart = ({ location, navigate }) => {
             search: createSearchParams({
               redirect: location.pathname,
             }).toString(),
-          });
+          })
         }
-      });
+      })
     }
-    localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
-    navigate({
-      pathname: `/${path.CHECKOUT}`,
-    });
-  };
+    localStorage.setItem(
+      "selectedProducts",
+      JSON.stringify(selectedProducts)
+    )
+      navigate({
+        pathname: `/${path.CHECKOUT}`,
+    })
+  }
 
   const removeCart = async (pid, color) => {
           const response = await apiRemoveCart(pid, color)
@@ -60,138 +63,176 @@ const DetailCart = ({ location, navigate }) => {
   const handleIncreaseQuantity = (productId, color, currentQuantity) => {
     dispatch(
       updateCart({ pid: productId, color, quantity: currentQuantity + 1 })
-    );
-  };
+    )
+  }
 
   const handleDecreaseQuantity = (productId, color, currentQuantity) => {
     if (currentQuantity > 1) {
       dispatch(
         updateCart({ pid: productId, color, quantity: currentQuantity - 1 })
-      );
+      )
     } else {
-      dispatch(removeFromCart(productId)); // Xóa sản phẩm nếu số lượng <= 1
+      dispatch(removeFromCart(productId)) // Xóa sản phẩm nếu số lượng <= 1
     }
-  };
+  }
   const toggleProductSelection = (product) => {
-    if (selectedProducts.find((p) => p._id === product._id)) {
+    const isSelected = selectedProducts.find(
+      (p) => p._id === product._id && p.color === product.color
+    )
+  
+    if (isSelected) {
       setSelectedProducts(
-        selectedProducts.filter((p) => p._id !== product._id)
-      );
+        selectedProducts.filter(
+          (p) => !(p._id === product._id && p.color === product.color)
+        )
+      )
     } else {
-      setSelectedProducts([...selectedProducts, product]);
+      // Bổ sung đầy đủ trường cần thiết
+      setSelectedProducts([
+        ...selectedProducts,
+        {
+          _id: product._id,
+          product: product.product?._id || product._id,
+          title: product.title,
+          price: product.price,
+          quantity: product.quantity,
+          thumbnail: product.thumbnail,
+          color: product.color, // quan trọng
+          note: product.note,
+        },
+      ])
     }
-  };
+  }
+  
 
   return (
-    <div className="w-full">
-      {/* Tiêu đề của trang */}
-      <div className="h-[81px] flex justify-center items-center bg-gray-100">
-        <div className="w-main">
-          <h3 className="font-semibold text-2xl uppercase">Giỏ Hàng</h3>
-        </div>
-      </div>
-
-      {/* Thông tin giỏ hàng */}
-      <div className="flex flex-col border w-main mx-auto my-8 rounded-lg shadow-lg">
-        <div className="w-main mx-auto bg-gray-200 font-bold py-3 grid grid-cols-10 gap-2 rounded-t-lg">
-          <span className="col-span-6 w-full text-center">Sản phẩm</span>
-          <span className="col-span-2 w-full text-center">Số lượng</span>
-          <span className="col-span-2 w-full text-center">Giá Tiền</span>
-        </div>
-        {currentCart?.map((el) => (
-          <div
-            key={el._id}
-            className="flex items-center border-b p-4 bg-white rounded-lg shadow-sm my-2"
+    <div className="w-full bg-gray-50 min-h-screen p-6">
+      <div className="container mx-auto">
+        <header className="text-3xl font-semibold py-4 mb-6 flex items-center border-b-2 border-indigo-600">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-10 w-10 mr-4 text-indigo-600" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
           >
-            <input
-              type="checkbox"
-              className="form-checkbox w-5 h-5 text-blue-600 "
-              checked={!!selectedProducts.find((p) => p._id === el._id)}
-              onChange={() => toggleProductSelection(el)}
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" 
             />
-            {/* Hình ảnh sản phẩm */}
-            <img
-              src={el.thumbnail}
-              alt={el.title}
-              className="w-20 h-20 object-cover rounded-md mr-4"
-            />
+          </svg>
+          Giỏ Hàng
+        </header>
 
-            {/* Thông tin sản phẩm */}
-            <div className="flex-1">
-              <h3 className="text-xl font-semibold text-gray-800">
-                {el.title}
-              </h3>
-              <p className="text-gray-500">{el.color}</p>
-            </div>
-
-            {/* Số lượng và nút tăng/giảm */}
-            <div className="flex items-center justify-between w-[28.8%]">
-              <div className="flex items-center">
-                {/* Nút giảm */}
-                <button
-                  className="w-7 h-7 bg-gray-300 flex items-center justify-center rounded-md hover:bg-blue-400 transition"
-                  onClick={() =>
-                    handleDecreaseQuantity(
-                      el.product?._id,
-                      el.color,
-                      el.quantity
-                    )
-                  }
-                >
-                  -
-                </button>
-
-                {/* Số lượng */}
-                <span className="mx-4 text-gray-700 text-xl">{el.quantity}</span>
-
-                {/* Nút tăng */}
-                <button
-                  className="w-7 h-7 bg-gray-300 flex items-center justify-center rounded-md hover:bg-blue-400 transition"
-                  onClick={() =>
-                    handleIncreaseQuantity(
-                      el.product?._id,
-                      el.color,
-                      el.quantity
-                    )
-                  }
-                >
-                  +
-                </button>
-              </div>
-
-              {/* Giá tiền */}
-              <span className="text-lg font-bold text-main">
-                {formatMoney(el.price)} VNĐ
-              </span>
-              {el.note && <span className="text-red-500 text-sm ml-2">({el.note})</span>}
-
-            </div>
-            <Button
-              className="m-2 text-red-500 hover:text-red-700 transition"
-              onClick={() => removeCart(el.product?._id, el.color)}
+        {currentCart?.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-lg shadow-md">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-24 w-24 mx-auto mb-4 text-gray-400" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
             >
-              Xóa
-            </Button>
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" 
+              />
+            </svg>
+            <p className="text-xl text-gray-600">Giỏ hàng của bạn đang trống</p>
+            <Link 
+              to="/" 
+              className="mt-4 inline-block px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+            >
+              Tiếp tục mua sắm
+            </Link>
           </div>
-        ))}
-      </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="grid grid-cols-10 gap-4 bg-gray-100 py-3 rounded-t-lg font-bold text-center">
+              <div className="col-span-1"></div>
+              <div className="col-span-5">Sản phẩm</div>
+              <div className="col-span-2">Số lượng</div>
+              <div className="col-span-2">Giá</div>
+            </div>
 
-      <div className="w-main mx-auto flex flex-col mb-12 justify-center items-end gap-3">
-        <span className="flex items-center gap-8 text-lg font-bold text-gray-700">
-          <span>Tạm tính:</span>
-          <span className="text-lg font-bold text-main ">
-            {`${formatMoney(
-              selectedProducts?.reduce(
-                (sum, el) => +el?.price * el.quantity + sum,
-                0
-              )
-            )} VND`}
-          </span>
-        </span>
-        <Button handleOnClick={handleSubmit}>Mua Hàng</Button>
+            {currentCart?.map((el) => (
+              <div 
+                key={el._id} 
+                className="grid grid-cols-10 gap-4 items-center py-4 border-b hover:bg-gray-50 transition"
+              >
+                <div className="col-span-1 flex justify-center">
+                  <input
+                    type="checkbox"
+                    className="form-checkbox w-5 h-5 text-indigo-600 rounded"
+                    checked={!!selectedProducts.find((p) => p._id === el._id)}
+                    onChange={() => toggleProductSelection(el)}
+                  />
+                </div>
+                <div className="col-span-5 flex items-center">
+                  <img
+                    src={el.thumbnail}
+                    alt={el.title}
+                    className="w-20 h-20 object-cover rounded-md mr-4"
+                  />
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">{el.title}</h3>
+                    <p className="text-gray-500">{el.color}</p>
+                  </div>
+                </div>
+                <div className="col-span-2 flex justify-center items-center">
+                  <div className="flex items-center space-x-3">
+                    <button 
+                      className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-indigo-200"
+                      onClick={() => handleDecreaseQuantity(el.product?._id, el.color, el.quantity)}
+                    >
+                      -
+                    </button>
+                    <span className="text-lg font-medium">{el.quantity}</span>
+                    <button 
+                      className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-indigo-200"
+                      onClick={() => handleIncreaseQuantity(el.product?._id, el.color, el.quantity)}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="col-span-2 flex justify-center items-center">
+                  <span className="text-lg font-bold text-indigo-600">
+                    {formatMoney(el.price)} VNĐ
+                  </span>
+                  {el.note && <span className="text-red-500 text-sm ml-2">({el.note})</span>}
+                </div>
+              </div>
+            ))}
+
+            <div className="mt-6 flex justify-between items-center">
+              <div className="text-xl font-bold text-gray-700">
+                Tổng tiền: 
+                <span className="ml-2 text-indigo-600">
+                  {`${formatMoney(
+                    selectedProducts?.reduce(
+                      (sum, el) => +el?.price * el.quantity + sum,
+                      0
+                    )
+                  )} VND`}
+                </span>
+              </div>
+              <Button 
+                handleOnClick={handleSubmit}
+                className="px-8 py-3 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white rounded-lg hover:opacity-90 transition"
+              >
+                Thanh Toán
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default withBaseComponent(DetailCart);
+export default withBaseComponent(DetailCart)

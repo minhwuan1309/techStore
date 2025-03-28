@@ -321,17 +321,6 @@ const Products = () => {
       {/* Product Listing */}
       <div className="lg:w-main w-full px-4 m-auto mt-8">
         <div className="bg-white rounded-xl shadow-lg p-6">
-          {/* Product Count */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">
-              {products?.products?.length > 0
-                ? `Hiển thị ${products?.products?.length} sản phẩm`
-                : "Không tìm thấy sản phẩm"}
-            </h2>
-            <div className="text-gray-600">
-              Tổng cộng: {products?.counts || 0} sản phẩm
-            </div>
-          </div>
 
           {/* Product Grid */}
           {products?.products?.length > 0 ? (

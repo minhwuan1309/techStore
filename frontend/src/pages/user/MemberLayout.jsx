@@ -9,9 +9,9 @@ const MemberLayout = () => {
     if (!isLoggedIn || !current) return <Navigate to={`/${path.LOGIN}`} replace={true} />
 
     return (
-        <div className='flex'>
+        <div className='flex bg-gray-50 min-h-screen'>
             <MemberSidebar />
-            <div className='flex-auto bg-gray-100 min-h-screen'>
+            <div className='flex-auto bg-white rounded-lg shadow-lg m-4 p-6 min-h-[calc(100vh-2rem)]'>
                 <Outlet />
             </div>
         </div>

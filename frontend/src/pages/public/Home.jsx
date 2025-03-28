@@ -8,12 +8,12 @@ import {
   CustomSlider,
   Blogs,
   Product,
+  VietnamMap,
 } from "../../components"
 import { useSelector } from "react-redux"
 import icons from "../../utils/icons"
 import withBaseComponent from "hocs/withBaseComponent"
 import { createSearchParams } from "react-router-dom"
-import vietnam from "assets/vietnam.png"
 // import Chatbot from "components/chatbot/Chatbot"
 
 const { IoIosArrowForward } = icons
@@ -35,29 +35,13 @@ const Home = ({ navigate }) => {
   return (
     <div className="w-full bg-gray-50 relative flex flex-col items-center pt-4">
       {/* Hero Section */}
-      <div className="w-[71%] bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 py-6 relative">
+      <div className="w-[65%%] justify-center bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 py-6 relative">
         <div className="md:w-main m-auto">
           <Banner />
         </div>
       </div>
       
-      <div className="fixed right-4 top-1/2 transform -translate-y-1/2 w-72 flex flex-col shadow-lg rounded-lg items-center opacity-90">
-        <img
-          id="vietnam-map"
-          src={vietnam}
-          alt="Vietnam Map"
-          className="w-full h-auto "
-          style={{ transition: "top 0.3s ease-in-out" }}
-        />
-        <div className="mt-4 bg-white px-4 py-2 text-red-600 font-bold text-lg  text-center">
-          <span >
-            Hoàng Sa - Trường Sa 
-          </span><br />
-          <span >
-            Là Của Việt Nam
-          </span>
-        </div>
-      </div>
+      <VietnamMap/>
 
 
       {/* Main Content */}

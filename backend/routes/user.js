@@ -31,7 +31,3 @@ router.put("/wishlist/:pid", [verifyAccessToken], ctrls.updateWishlist)
 router.put("/:uid", [verifyAccessToken, isAdmin], ctrls.updateUserByAdmin)
 
 module.exports = router
-
-// CRUD | Create - Read - Update - Delete | POST - GET - PUT - DELETEeee
-// CREATE (POST) + PUT - body
-// GET + DELETE - query // ?fdfdsf&fdfs

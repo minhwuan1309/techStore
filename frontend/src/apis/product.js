@@ -66,15 +66,18 @@ export const apiUpdateStatus = (oid, data) =>
   })
 
 export const apiConfirmOrder = (orderId) =>
-  axios({
-    url: `/order/confirm/` + orderId, // Địa chỉ route backend để xác nhận đơn hàng
-    method: "get",
-  });
+    axios({
+      url: `/order/confirm/` + orderId,
+      method: "put",
+    })
+  
 
 export const apiDeleteOrderByAdmin = (oid) =>
   axios({
     url: "/order/admin/" + oid,
     method: "delete",
   })
+
+
 
   

@@ -198,7 +198,7 @@ const ManageOrder = () => {
                   {el.discount > 0 ? (
                     <>
                       <span className="text-green-500">
-                        {formatMoney(el.finalTotal * 25000)} VNĐ
+                        {formatMoney(el.finalTotal)} VNĐ
                       </span>
                       <br />
                       <span className="text-gray-500 text-sm">
@@ -207,7 +207,7 @@ const ManageOrder = () => {
                     </>
                   ) : (
                     <span className="text-green-500">
-                      {formatMoney(el.total * 25000)} VNĐ
+                      {formatMoney(el.total)} VNĐ
                     </span>
                   )}
                 </td>

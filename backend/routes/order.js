@@ -13,5 +13,6 @@ router.delete(
   isAdmin,
   ctrls.deleteOrderByAdmin
 )
+router.put('/confirm/:oid', verifyAccessToken, ctrls.confirmReceivedOrder)
 
 module.exports = router

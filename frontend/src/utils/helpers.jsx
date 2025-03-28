@@ -51,19 +51,69 @@ export function secondsToHms(d) {
 }
 
 export const validate = (payload, setInvalidFields) => {
-  let invalids = 0
-  const formatPayload = Object.entries(payload)
-  for (let arr of formatPayload) {
-    if (arr[1].trim() === "") {
-      invalids++
-      setInvalidFields((prev) => [
-        ...prev,
-        { name: arr[0], mes: "Require this field." },
-      ])
+  let invalids = 0;
+  const validationRules = {
+    email: {
+      required: true,
+      pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      message: "Email không hợp lệ"
+    },
+    password: {
+      required: true,
+      minLength: 3,
+    },
+    mobile: {
+      required: true,
+      pattern: /^[0-9]+$/,
+      message: "Số điện thoại chỉ được chứa số"
+    },
+    firstname: {
+      required: true,
+      message: "Vui lòng nhập họ"
+    },
+    lastname: {
+      required: true,
+      message: "Vui lòng nhập tên"
+    },
+    confirmPassword: {
+      required: true,
+      message: "Vui lòng xác nhận mật khẩu"
     }
+  };
+
+  const errors = [];
+
+  Object.keys(validationRules).forEach(key => {
+    if (payload.hasOwnProperty(key)) {
+      const rule = validationRules[key];
+      const value = payload[key];
+
+      if (rule.required && (!value || value.trim() === '')) {
+        errors.push({ name: key, mes: rule.message });
+        invalids++;
+      }
+
+      if (rule.pattern && value && !rule.pattern.test(value)) {
+        errors.push({ name: key, mes: rule.message });
+        invalids++;
+      }
+
+      if (rule.minLength && value && value.length < rule.minLength) {
+        errors.push({ name: key, mes: rule.message });
+        invalids++;
+      }
+    }
+  });
+
+  // Special check for confirmPassword matching
+  if (payload.password && payload.confirmPassword && 
+      payload.password !== payload.confirmPassword) {
+    errors.push({ name: 'confirmPassword', mes: 'Mật khẩu xác nhận không khớp' });
+    invalids++;
   }
 
-  return invalids
+  setInvalidFields(errors);
+  return invalids;
 }
 
 export const fotmatPrice = (number) => Math.round(number / 1000) * 1000

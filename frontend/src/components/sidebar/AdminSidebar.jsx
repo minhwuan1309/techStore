@@ -29,7 +29,7 @@ const AdminSidebar = ({ isSidebarOpen, darkMode, setDarkMode }) => {
     const role = +current.role
     if (role === 1945) {
       return adminSidebar.filter((item) =>
-        ["Tổng quát", "Quản lý tài khoản", "Sản phẩm", "Quản lý đơn hàng", "Loại sản phẩm","Khuyến mãi", "Bài viết", "Chat"].includes(item.text)
+        ["Tổng quát", "Thông tin cá nhân","Quản lý tài khoản", "Sản phẩm", "Quản lý đơn hàng", "Loại sản phẩm","Khuyến mãi", "Bài viết", "Chat"].includes(item.text)
       )
     } else if (role === 1980) {
       return adminSidebar.filter((item) =>
