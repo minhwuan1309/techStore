@@ -87,6 +87,9 @@ class ProductService {
     
     const qr = { ...colorQueryObject, ...formatedQueries, ...queryObject }
     let queryCommand = Product.find(qr)
+    .populate("brand", "title")
+    .populate("category", "title")
+  
 
     // Sorting
     if (queries.sort) {

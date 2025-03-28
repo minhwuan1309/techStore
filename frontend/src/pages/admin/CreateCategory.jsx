@@ -1,9 +1,10 @@
-import { apiCreateCategory } from "apis";
-import { Button, InputForm } from "components";
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import { getBase64 } from "utils/helpers";
+import React, { useState, useEffect } from "react"
+import { apiCreateCategory, apiGetBrands } from "apis"
+import { Button, InputForm } from "components"
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import { getBase64 } from "utils/helpers"
+import clsx from 'clsx'
 
 const CreateCategory = () => {
   const {
@@ -13,128 +14,184 @@ const CreateCategory = () => {
     setValue,
     reset,
     watch,
-  } = useForm();
-  const [isLoading, setIsLoading] = useState(false);
-  const [brands, setBrands] = useState([""]);
-  const [preview, setPreview] = useState({ image: null });
+  } = useForm()
 
-  // Thêm trường nhập mới cho nhãn hiệu
-  const addBrandField = () => setBrands((prev) => [...prev, ""]);
+  const [isLoading, setIsLoading] = useState(false)
+  const [availableBrands, setAvailableBrands] = useState([])
+  const [selectedBrands, setSelectedBrands] = useState([])
+  const [preview, setPreview] = useState({ image: null })
+  const [currentBrand, setCurrentBrand] = useState("")
 
-  // Xóa trường nhập nhãn hiệu theo chỉ số
-  const removeBrandField = (index) =>
-    setBrands((prev) => prev.filter((_, i) => i !== index));
-
-  // Xử lý thay đổi trong trường nhập nhãn hiệu
-  const handleBrandChange = (index, value) => {
-    const updatedBrands = [...brands];
-    updatedBrands[index] = value;
-    setBrands(updatedBrands);
-  };
-
-  const handlePreviewImage = async (file) => {
-    if (!file) return;
-    const base64Image = await getBase64(file);
-    setPreview({ image: base64Image });
-  };
-
+  // Fetch available brands
   useEffect(() => {
-    const imageFile = watch("image")?.[0];
+    const fetchBrands = async () => {
+      const response = await apiGetBrands()
+      if (response.success) {
+        const sortedBrands = response.brands.sort((a, b) => 
+          a.title.localeCompare(b.title)
+        )
+        setAvailableBrands(sortedBrands)
+      }
+    }
+    fetchBrands()
+  }, [])
+
+  // Handle image preview
+  const handlePreviewImage = async (file) => {
+    if (!file) return
+    const base64Image = await getBase64(file)
+    setPreview({ image: base64Image })
+  }
+
+  // Watch image file changes
+  useEffect(() => {
+    const imageFile = watch("image")?.[0]
     if (imageFile) {
-      handlePreviewImage(imageFile);
+      handlePreviewImage(imageFile)
     }
-  }, [watch("image")]);
+  }, [watch("image")])
 
-  // Xử lý khi người dùng gửi form
+  // Add brand to selected brands
+  const handleAddBrand = () => {
+    if (!currentBrand) {
+      toast.error("Vui lòng chọn thương hiệu!")
+      return
+    }
+
+    if (selectedBrands.includes(currentBrand)) {
+      toast.error("Thương hiệu này đã được chọn!")
+      return
+    }
+
+    setSelectedBrands(prev => [...prev, currentBrand])
+    setCurrentBrand("")
+  }
+
+  // Remove brand from selected brands
+  const handleRemoveBrand = (brandId) => {
+    setSelectedBrands(prev => prev.filter(id => id !== brandId))
+  }
+
+  // Handle form submission
   const handlePublish = async (data) => {
-    const formData = new FormData();
-    formData.append("title", data.title);
-    brands
-      .filter((brand) => brand.trim() !== "")
-      .forEach((brand) => formData.append("brands[]", brand));
-    if (preview.image) {
-      formData.append("image", preview.image);
+    if (selectedBrands.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một thương hiệu!")
+      return
     }
 
-    setIsLoading(true);
+    const formData = new FormData()
+    formData.append("title", data.title)
+    
+    selectedBrands.forEach(brandId => {
+      formData.append("brand[]", brandId)
+    })
+
+    if (preview.image) {
+      formData.append("image", preview.image)
+    }
+
+    setIsLoading(true)
     try {
-      const response = await apiCreateCategory(formData);
+      const response = await apiCreateCategory(formData)
       if (response?.success) {
-        toast.success("Danh mục đã được tạo thành công!");
-        reset();
+        toast.success("Danh mục đã được tạo thành công!")
+        reset()
+        setSelectedBrands([])
+        setPreview({ image: null })
       } else {
-        toast.error("Có lỗi xảy ra. Vui lòng thử lại!");
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại!")
       }
     } catch (error) {
-      toast.error("Có lỗi xảy ra khi tạo danh mục!");
+      toast.error("Có lỗi xảy ra khi tạo danh mục!")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="w-full flex flex-col gap-6 bg-gray-100 p-6 rounded-lg shadow-md">
-      {/* Header */}
-      <div className="flex justify-between items-center border-b pb-4">
-        <h1 className="text-3xl font-semibold text-gray-700">
+    <div className="w-full bg-white/30 backdrop-blur-xl rounded-2xl p-6 shadow-2xl">
+      <h1 className="flex justify-between items-center text-3xl font-bold mb-6 pb-4 border-b-2 border-transparent">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
           Tạo loại sản phẩm
-        </h1>
-      </div>
+        </span>
+      </h1>
 
-      {/* Form */}
-      <form
-        onSubmit={handleSubmit(handlePublish)}
-        className="space-y-6 flex flex-col"
-      >
-
+      <form onSubmit={handleSubmit(handlePublish)} className="space-y-6">
+        {/* Category Name */}
         <div>
-          <label className="block text-xl font-medium text-gray-700 mb-2">
-            Tên loại:
-          </label>
+          <label className="block text-gray-700 mb-2">Tên loại:</label>
           <InputForm
             id="title"
             register={register}
             errors={errors}
-            validate={{
-              required: "Category name is required.",
-            }}
-            placeholder="Enter category name"
+            validate={{ required: "Tên danh mục không được để trống." }}
+            placeholder="Nhập tên danh mục"
           />
         </div>
 
-        <div className="space-y-2 py-4">
-          <label className="font-semibold text-xl">Thương hiệu (có thể thêm nhiều):</label>
-          {brands.map((brand, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-4 border rounded-md p-2 bg-white"
+        {/* Brand Selection */}
+        <div className="space-y-4">
+          <label className="font-semibold">Chọn thương hiệu:</label>
+          
+          <div className="flex gap-4">
+            <select
+              value={currentBrand}
+              onChange={(e) => setCurrentBrand(e.target.value)}
+              className="flex-grow h-11 bg-white/50 backdrop-blur-sm border border-purple-200 rounded-xl"
             >
-              <input
-                type="text"
-                value={brand}
-                onChange={(e) => handleBrandChange(index, e.target.value)}
-                placeholder={`Brand ${index + 1}`}
-                className="border p-2 w-full rounded-md"
-              />
-              <Button
-                handleOnClick={() => removeBrandField(index)}
-                className="text-red-500"
-              >
-                Xoá
-              </Button>
+              <option value="">Chọn thương hiệu</option>
+              {availableBrands.map((brand) => (
+                <option key={brand._id} value={brand._id}>
+                  {brand.title}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              onClick={handleAddBrand}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl hover:opacity-90"
+            >
+              Thêm thương hiệu
+            </button>
+          </div>
+
+          {/* Selected Brands Display */}
+          {selectedBrands.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-lg font-medium mb-2">Các thương hiệu đã chọn:</h3>
+              <div className="grid grid-cols-3 gap-4">
+                {selectedBrands.map((brandId) => {
+                  const brand = availableBrands.find(b => b._id === brandId)
+                  return (
+                    <div 
+                      key={brandId} 
+                      className="flex justify-between items-center bg-purple-100 p-2 rounded-xl"
+                    >
+                      <span>{brand?.title}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveBrand(brandId)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        Xóa
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
-          ))}
-          <Button handleOnClick={addBrandField}>Thêm thương hiệu</Button>
+          )}
         </div>
+
+        {/* Image Upload */}
         <div>
-          <label className="block text-xl font-medium text-gray-700 mb-2">
-            Hình ảnh
-          </label>
+          <label className="block text-gray-700 mb-2">Hình ảnh</label>
           <input
             type="file"
             id="image"
-            {...register("image", { required: "This field cannot be empty." })}
-            className="border p-2 w-full rounded-md"
+            {...register("image", { required: "Hình ảnh không được để trống." })}
+            className="h-11 bg-white/50 backdrop-blur-sm border border-purple-200 rounded-xl w-full p-2"
           />
           {errors.image && (
             <small className="text-xs text-red-500">
@@ -142,24 +199,26 @@ const CreateCategory = () => {
             </small>
           )}
         </div>
+
         {/* Preview Thumbnail */}
         {preview.image && (
           <div className="py-4">
             <img
               src={preview.image}
               alt="Preview"
-              className="w-32 h-32 object-cover rounded-md shadow-md"
+              className="w-32 h-32 object-cover rounded-xl shadow-md"
             />
           </div>
         )}
+
         {/* Submit Button */}
         <div className="flex justify-end">
           <button
             type="submit"
-            className={`px-6 py-2 rounded-md text-white ${
+            className={`px-6 py-2 rounded-xl text-white ${
               isLoading
-                ? "bg-blue-300 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600"
+                ? "bg-purple-300 cursor-not-allowed"
+                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90"
             }`}
             disabled={isLoading}
           >
@@ -168,7 +227,7 @@ const CreateCategory = () => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default CreateCategory;
+export default CreateCategory

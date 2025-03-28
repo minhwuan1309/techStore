@@ -407,14 +407,44 @@ class OrderService {
       to: userEmail,
       subject: "Xác nhận đơn hàng",
       html: `
-        <h1>Cảm ơn bạn đã đặt hàng!</h1>
-        <p>Đơn hàng của bạn đã được xác nhận.</p>
-        <p><strong>Nếu bạn đã nhận hàng, vui lòng xác nhận bằng cách nhấn vào nút dưới đây:</strong></p>
-        <a href="${confirmationUrl}" 
-          style="background-color: #28a745 color: white padding: 10px 20px text-decoration: none border-radius: 5px">
-          Đã nhận được đơn hàng
-        </a>
-      `,
+      <h1>Cảm ơn bạn đã đặt hàng!</h1>
+      <p>Đơn hàng của bạn đã được xác nhận. Chi tiết đơn hàng như sau:</p>
+      <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+          <tr>
+            <th style="border: 1px solid #ddd; padding: 8px;">Sản phẩm</th>
+            <th style="border: 1px solid #ddd; padding: 8px;">Số lượng</th>
+            <th style="border: 1px solid #ddd; padding: 8px;">Giá</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${orderDetails.products
+            .map(
+              (product) => `
+                <tr>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${
+                    product.title
+                  }</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${
+                    product.quantity
+                  }</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${formatMoney(
+                    product.price * product.quantity
+                  )} VNĐ</td>
+                </tr>
+              `
+            )
+            .join("")}
+        </tbody>
+      </table>
+      <p style="margin-top: 20px;"><strong>Tổng cộng:</strong> ${formatMoney(
+        orderDetails.total
+      )} VNĐ</p>
+      <p><strong>Phương thức thanh toán:</strong> ${
+        orderDetails.paymentMethod
+      }</p>
+      <p>Đơn hàng của bạn sẽ được giao trong vòng 2 ngày.</p>
+    `,
     }
   
     try {

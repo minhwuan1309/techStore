@@ -1,15 +1,17 @@
+
 import {
   apiDeleteOrderByAdmin,
   apiGetOrders,
   apiUpdateStatus,
 } from "apis"
+import clsx from "clsx"
 import { Button, InputForm, Pagination } from "components"
 import useDebounce from "hooks/useDebounce"
 import moment from "moment"
 import React, { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { BiCustomize, BiEdit } from "react-icons/bi"
-import { RiCloseFill, RiDeleteBin6Line } from "react-icons/ri"
+import { RiCloseFill, RiDeleteBin6Line, RiSearchLine } from "react-icons/ri"
 import {
   createSearchParams,
   useLocation,
@@ -109,48 +111,58 @@ const ManageOrder = () => {
   const closeCustomerPopup = () => setSelectedCustomer(null)
 
   return (
-    <div className="w-full flex flex-col gap-4 bg-gray-50 relative">
-      <div className="h-[69px] w-full"></div>
-      <div className="p-4 border-b w-full bg-gray-50 flex items-center fixed top-0">
-        <h1 className="text-3xl font-bold tracking-tight">Quản lý đơn hàng</h1>
+    <div className={clsx("w-full bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl transition-all duration-300", editOrder && "pl-20")}>
+      <div className="flex justify-between items-center mb-6 pb-4 border-b-2 border-gray-200/20">
+        <h1 className="text-4xl font-extrabold">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+            Quản lý đơn hàng
+          </span>
+        </h1>
         {editOrder && (
-          <>
+          <div className="flex space-x-4">
             <Button
               handleOnClick={handleUpdate}
-              style="bg-blue-500 text-white px-4 py-2 rounded-md mx-6"
+              style="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:opacity-90 px-6 py-2 shadow-lg transition-all duration-300 hover:scale-105"
             >
               Cập nhật
             </Button>
-            <Button handleOnClick={() => setEditOrder(null)}>Quay lại</Button>
-          </>
+            <Button 
+              handleOnClick={() => setEditOrder(null)}
+              style="bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 px-6 py-2 shadow-md transition-all duration-300 hover:scale-105"
+            >
+              Quay lại
+            </Button>
+          </div>
         )}
       </div>
-      <div className="px-4 mt-6 w-full">
+
+      <div className="relative mb-6">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <RiSearchLine className="text-gray-400" />
+        </div>
         <input
           type="text"
           placeholder="Tìm kiếm theo tên khách hàng"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-[50%] mb-4 border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none py-2 px-4 shadow-sm text-sm"
+          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none text-sm transition-all duration-300 shadow-sm hover:border-purple-300"
         />
-        <table className="table-auto w-full px-4">
-          <thead>
-            <tr className="font-bold bg-gray-700 text-[13px] text-white">
-              <th className="text-center py-2">Mã đơn hàng</th>
-              <th className="text-center py-2">Khách hàng</th>
-              <th className="text-center py-2">Số lượng sản phẩm</th>
-              <th className="text-center py-2">Tổng tiền</th>
-              <th className="text-center py-2">Phương thức thanh toán</th>
-              <th className="text-center py-2">Trạng thái thanh toán</th>
-              <th className="text-center py-2">Ngày mua hàng</th>
-              <th className="text-center py-2">Thao tác</th>
+      </div>
+
+      <div className="overflow-x-auto rounded-xl shadow-md">
+        <table className="w-full">
+          <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <tr>
+              {['Mã đơn hàng', 'Khách hàng', 'Số lượng sản phẩm', 'Tổng tiền', 'Phương thức thanh toán', 'Trạng thái thanh toán', 'Ngày mua hàng', 'Thao tác'].map((header) => (
+                <th key={header} className="text-center py-4 px-2 text-sm font-semibold">{header}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {filteredOrders?.map((el, idx) => (
               <tr
-                className="border border-gray-500 hover:bg-gray-50 transition duration-150"
                 key={el._id}
+                className="border-b border-gray-200 hover:bg-purple-50/50 transition duration-150"
               >
                 <td className="text-center py-2 px-2">
                   <div>

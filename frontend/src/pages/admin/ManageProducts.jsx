@@ -244,19 +244,9 @@ const ManageProducts = () => {
                       />
                     </td>
                     <td className="py-4 px-6">{el.title}</td>
-                    <td className="py-4 px-6">
-                      {el.brand === "lg"
-                        ? el.brand.toUpperCase()
-                        : el.brand
-                            ?.split(" ")
-                            .map(
-                              (word) =>
-                                word.charAt(0).toUpperCase() +
-                                word.slice(1).toLowerCase()
-                            )
-                            .join(" ")}
-                    </td>
-                    <td className="py-4 px-6">{el.category}</td>
+                    <td className="py-4 px-6">{el.brand?.title || "Không có thương hiệu"}</td>
+
+                    <td className="py-4 px-6">{el.category?.title}</td>
                     <td className="py-4 px-6 text-green-500 font-semibold">
                       {`${formatMoney(fotmatPrice(el.price))} VNĐ`}
                     </td>

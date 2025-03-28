@@ -6,10 +6,12 @@ var productCategorySchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    brand: {
-        type: Array,
-        required: true,
-    },
+    brand: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Brand'
+        }
+    ],
     image:{
         type: String,
     },

@@ -29,6 +29,7 @@ const path = {
   CREATE_CATEGORY: "create-category",
   MANAGE_CATEGORIES: "manage-categories",
   MANAGE_COUPON: 'manage-coupon',
+  MANAGE_BRANDS: 'manage-brands',
   CHAT: "chat",
 
   // Member

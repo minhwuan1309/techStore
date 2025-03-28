@@ -62,12 +62,13 @@ const ManageBlog = ({ dispatch }) => {
     })
   }
   return (
-    <div className="w-full flex flex-col gap-4 min-h-screen bg-gray-50 relative">
-      <div className="h-[69px] w-full"></div>
-      <div className="p-4 border-b w-full bg-gray-50 flex items-center fixed top-0">
-        <h1 className="text-3xl font-bold tracking-tight">Quản lý bài viết</h1>
-      </div>
-      <div className="flex justify-end items-center px-4">
+    <div className="w-full bg-white/30 backdrop-blur-xl rounded-2xl p-6 shadow-2xl min-h-screen">
+      <h1 className="flex justify-between items-center text-3xl font-bold mb-6 pb-4 border-b-2 border-transparent">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
+          Quản lý bài viết
+        </span>
+      </h1>
+      <div className="flex justify-end items-center px-4 mb-6">
         <form className="w-[45%]">
           <InputForm
             id="q"
@@ -75,13 +76,14 @@ const ManageBlog = ({ dispatch }) => {
             errors={errors}
             fullWidth
             placeholder="Tìm kiếm blogs theo tiêu đề, mô tả,..."
+            className="bg-white/50 backdrop-blur-sm border border-purple-200 rounded-xl"
           />
         </form>
       </div>
-      <div className="px-4 mt-20 w-full">
-        <table className="table-auto w-full border-collapse border border-gray-300 text-gray-700 bg-white rounded-md shadow">
+      <div className="px-4 w-full">
+        <table className="table-auto w-full border-collapse border border-purple-200 text-gray-700 bg-white/70 rounded-xl shadow-md">
           <thead>
-            <tr className="font-bold bg-gray-700 text-[13px] text-white">
+            <tr className="font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm">
               <th className="text-center py-3 px-2">STT</th>
               <th className="text-center py-3 px-2">Tiêu đề</th>
               <th className="text-center py-3 px-2">Hashtags</th>
@@ -96,7 +98,7 @@ const ManageBlog = ({ dispatch }) => {
             {blogs?.length > 0 ? (
               blogs.map((el, idx) => (
                 <tr
-                  className="border-b hover:bg-gray-50 transition duration-150"
+                  className="border-b hover:bg-purple-50 transition duration-150"
                   key={el._id}
                 >
                   <td className="text-center py-3 px-2">
@@ -125,14 +127,14 @@ const ManageBlog = ({ dispatch }) => {
                           })
                         )
                       }
-                      className="text-blue-500 hover:text-orange-500 cursor-pointer"
+                      className="text-purple-500 hover:text-purple-700 cursor-pointer"
                       title="Chỉnh sửa"
                     >
                       <BiEdit size={20} />
                     </span>
                     <span
                       onClick={() => handleDeleteBolg(el.id)}
-                      className="text-red-500 hover:text-orange-500 cursor-pointer"
+                      className="text-red-500 hover:text-red-700 cursor-pointer"
                       title="Xóa"
                     >
                       <RiDeleteBin6Line size={20} />

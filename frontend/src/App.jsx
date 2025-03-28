@@ -44,6 +44,7 @@ import ManageCoupon from "pages/admin/ManageCoupon"
 import ConfirmOrder from "pages/user/ConfirmOrder";
 import Chat from "pages/admin/Chat"
 import AdminPersonal from "pages/admin/AdminPersonal";
+import ManageBrands from "pages/admin/ManageBrands";
 
 
 function App() {
@@ -92,6 +93,7 @@ function App() {
           <Route path={path.MANAGE_BLOGS} element={<ManageBlog />} />
           <Route path={path.CREATE_CATEGORY} element={<CreateCategory />} />
           <Route path={path.MANAGE_CATEGORIES} element={<ManageCategories />} />
+          <Route path={path.MANAGE_BRANDS} element={<ManageBrands/>}/>
           <Route path={path.MANAGE_COUPON} element={<ManageCoupon/>}/>
           <Route path={path.CHAT} element = {<Chat/>}/>
         </Route>

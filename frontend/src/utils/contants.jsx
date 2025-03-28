@@ -228,6 +228,13 @@ export const adminSidebar = [
     ],
   },
   {
+    id: 10,
+    type: "SINGLE",
+    text: "Quản lý thương hiệu",
+    icon: <TbBrandProducthunt size={20} />,
+    path: `/${path.ADMIN}/${path.MANAGE_BRANDS}`,
+  },
+  {
     id: 4,
     type: "SINGLE",
     text: "Quản lý đơn hàng",

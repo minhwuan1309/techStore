@@ -141,7 +141,11 @@ const CreateProducts = () => {
               label="Loại sản phẩm"
               options={categories
                 ?.slice()
-                ?.sort((a, b) => a.title.localeCompare(b.title))
+                ?.sort((a, b) => {
+                  const aValue = typeof a === 'string' ? a : a?.title;
+                  const bValue = typeof b === 'string' ? b : b?.title;
+                  return aValue?.localeCompare(bValue);
+                })                
                 ?.map((el) => ({
                   code: el._id,
                   value: el.title,
@@ -154,19 +158,27 @@ const CreateProducts = () => {
               fullWidth
             />
 
-            <Select
-              label="Thương hiệu"
-              options={categories
-                ?.find((el) => el._id === watch("category"))
-                ?.brand?.slice()
-                ?.sort((a, b) => a.localeCompare(b))
-                ?.map((el) => ({ code: el, value: el }))}
-              register={register}
-              id="brand"
-              style="flex-auto"
-              errors={errors}
-              fullWidth
-            />
+              <Select
+                label="Thương hiệu"
+                options={categories
+                  ?.find((el) => el._id === watch("category"))
+                  ?.brand?.slice()
+                  ?.sort((a, b) => {
+                    const aVal = typeof a === 'string' ? a : a?.title;
+                    const bVal = typeof b === 'string' ? b : b?.title;
+                    return aVal?.localeCompare(bVal);
+                  })
+                  ?.map((el) => ({
+                    code: typeof el === 'string' ? el : el._id,
+                    value: typeof el === 'string' ? el : el.title,
+                  }))}
+                register={register}
+                id="brand"
+                style="flex-auto"
+                errors={errors}
+                fullWidth
+              />
+
           </div>
 
           <MarkdownEditor

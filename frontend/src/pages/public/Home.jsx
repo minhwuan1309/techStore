@@ -164,7 +164,7 @@ const Home = ({ navigate }) => {
                             }
                           >
                             <IoIosArrowForward size={14} className="text-indigo-600" />
-                            <span className="hover:translate-x-1 transition-transform duration-300">{item}</span>
+                            <span className="hover:translate-x-1 transition-transform duration-300">{item.title}</span>
                           </li>
                         ))}
                       </ul>
@@ -205,7 +205,7 @@ const Home = ({ navigate }) => {
                               }
                             >
                               <IoIosArrowForward size={14} className="text-indigo-600" />
-                              <span className="hover:translate-x-1 transition-transform duration-300">{item}</span>
+                              <span className="hover:translate-x-1 transition-transform duration-300">{item.title}</span>
                             </li>
                           ))}
                         </ul>

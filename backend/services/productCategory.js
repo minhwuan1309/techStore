@@ -41,7 +41,7 @@ class ProductCategoryService {
 
   async getCategories() {
     try {
-      const response = await ProductCategory.find()
+      const response = await ProductCategory.find().populate("brand","title")
       return {
         success: !!response,
         prodCategories: response || "Không thể lấy danh sách danh mục.",

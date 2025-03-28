@@ -31,10 +31,41 @@ const Chat = () => {
     const [isTyping, setIsTyping] = useState(false)
     const [localIsTyping, setLocalIsTyping] = useState(false)
     const lastTypingTimeRef = useRef(null)
-    const lastMessageRef = useRef(null)
+
+    console.log("Current user role: ", current.role)
 
     // Use debounce for search query
     const queriesDebounce = useDebounce(queries.q, 800)
+
+    const fetchUsers = useCallback(async (params = {}) => {
+        try {
+            const res = await apiGetUsers({ 
+                ...params, 
+                limit: process.env.REACT_APP_LIMIT,
+                role: [1945, 1980]
+            })
+            
+            if (res?.success) {
+                // Log full user details for debugging
+                console.log("All fetched users:", res.users.map(u => ({
+                    id: u._id,
+                    firstname: u.firstname,
+                    lastname: u.lastname,
+                    role: u.role,
+                    fullUser: u
+                    }))
+                )
+                const filteredUsers = res.users.filter(u => 
+                    u._id !== current._id 
+                )
+                                
+                setUsers(filteredUsers)
+                setFilteredUsers(filteredUsers)
+            }
+        } catch (error) {
+            console.error('Error fetching users:', error)
+        }
+    }, [current._id])
 
     // Scroll to bottom when messages change
     useEffect(() => {
@@ -129,22 +160,7 @@ const Chat = () => {
     }, [])
 
     // Fetch users with search functionality
-    const fetchUsers = useCallback(async (params = {}) => {
-        try {
-            const res = await apiGetUsers({ 
-                ...params, 
-                limit: process.env.REACT_APP_LIMIT 
-            })
-            
-            if (res?.success) {
-                const filteredUsers = res.users.filter(u => u._id !== current._id)
-                setUsers(filteredUsers)
-                setFilteredUsers(filteredUsers)
-            }
-        } catch (error) {
-            console.error('Error fetching users:', error)
-        }
-    }, [current._id])
+
 
     // Initial fetches
     useEffect(() => {
@@ -234,127 +250,157 @@ const Chat = () => {
     }
 
     return (
-        <div className="p-4 flex gap-4 h-[calc(100vh-100px)] bg-gray-50">
-            {/* Users List */}
-            <div className="w-1/4 bg-white border rounded-lg shadow-md relative">
-                <div className="p-3 border-b">
-                    <input 
-                        ref={searchInputRef}
-                        type="text" 
-                        placeholder="Tìm kiếm người dùng..." 
-                        className="w-full px-3 py-2 border rounded"
-                        value={queries.q}
-                        onChange={handleSearchUsers}
-                    />
-                </div>
-                <div className="overflow-y-auto max-h-[calc(100vh-200px)]">
-                    {filteredUsers.map(u => (
-                        <div
-                            key={u._id}
-                            onClick={() => handleSelectUser(u)}
-                            className={`
-                                cursor-pointer p-3 hover:bg-gray-100 
-                                flex items-center 
-                                ${selectedUser?._id === u._id ? 'bg-blue-100' : ''}
-                            `}
-                        >
-                            <img 
-                                src={u.avatar || '/default-avatar.png'} 
-                                alt={u.firstname} 
-                                className="w-10 h-10 rounded-full mr-3"
+        <div className="p-2 bg-gradient-to-br from-purple-50 to-pink-50">
+            <div className="max-w-7xl mx-auto bg-white/30 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden">
+                <div className="flex h-[calc(100vh-100px)]">
+                    {/* Users List */}
+                    <div className="w-1/4 bg-white/60 border-r border-white/20 relative">
+                        <div className="p-4 border-b border-white/20">
+                            <input 
+                                ref={searchInputRef}
+                                type="text" 
+                                placeholder="Tìm kiếm người dùng..." 
+                                className="w-full px-4 py-3 border border-purple-200 rounded-xl 
+                                focus:ring-2 focus:ring-purple-300 transition-all duration-300
+                                bg-purple-50/50 text-sm"
+                                value={queries.q}
+                                onChange={handleSearchUsers}
                             />
-                            <div>
-                                <div className="font-semibold">
-                                    {u.firstname} {u.lastname}
-                                </div>
-                            </div>
                         </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Chat Area */}
-            <div className="w-3/4 flex flex-col bg-white border rounded-lg shadow-md">
-                {/* Chat Header */}
-                <div className="p-4 border-b flex items-center">
-                    {selectedUser ? (
-                        <>
-                            <img 
-                                src={selectedUser.avatar || '/default-avatar.png'} 
-                                alt={selectedUser.firstname} 
-                                className="w-12 h-12 rounded-full mr-3"
-                            />
-                            <div>
-                                <div className="font-bold text-lg">
-                                    {selectedUser.firstname} {selectedUser.lastname}
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <div className="text-gray-500">Chọn người để bắt đầu chat</div>
-                    )}
-                </div>
-
-                {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                    {selectedUser ? (
-                        messages.map((msg, index) => (
-                            <div 
-                                key={index} 
-                                className={`flex ${
-                                    msg.sender === current._id 
-                                        ? 'justify-end' 
-                                        : 'justify-start'
-                                }`}
-                            >
-                                <div 
+                        <div className="overflow-y-auto max-h-[calc(100vh-200px)] scrollbar-thin scrollbar-thumb-purple-300">
+                            {filteredUsers.map(u => (
+                                <div
+                                    key={u._id}
+                                    onClick={() => handleSelectUser(u)}
                                     className={`
-                                        max-w-xs p-2 rounded-lg 
-                                        ${msg.sender === current._id 
-                                            ? 'bg-blue-500 text-white' 
-                                            : 'bg-gray-200'}
+                                        cursor-pointer p-4 hover:bg-purple-100/50 
+                                        flex items-center transition-all duration-300
+                                        ${selectedUser?._id === u._id 
+                                            ? 'bg-gradient-to-r from-purple-100 to-pink-100' 
+                                            : ''}
                                     `}
                                 >
-                                    {msg.content}
+                                    <img 
+                                        src={u.avatar || '/default-avatar.png'} 
+                                        alt={u.firstname} 
+                                        className="w-12 h-12 rounded-full mr-4 
+                                        border-2 border-transparent 
+                                        bg-gradient-to-r from-purple-300 to-pink-300 p-0.5
+                                        transition-transform hover:scale-105"
+                                    />
+                                    <div>
+                                        <div className="font-semibold text-gray-800">
+                                            {u.firstname} {u.lastname}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Chat Area */}
+                    <div className="w-3/4 flex flex-col">
+                        {/* Chat Header */}
+                        <div className="p-4 border-b border-white/20 flex items-center 
+                            bg-gradient-to-r from-purple-100/50 to-pink-100/50">
+                            {selectedUser ? (
+                                <div className="flex items-center">
+                                    <img 
+                                        src={selectedUser.avatar || '/default-avatar.png'} 
+                                        alt={selectedUser.firstname} 
+                                        className="w-14 h-14 rounded-full mr-4 
+                                        border-2 border-transparent 
+                                        bg-gradient-to-r from-purple-400 to-pink-400 p-0.5
+                                        transition-transform hover:scale-105"
+                                    />
+                                    <div>
+                                        <div className="font-bold text-xl text-transparent 
+                                            bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                                            {selectedUser.firstname} {selectedUser.lastname}
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-gray-500">Chọn người để bắt đầu chat</div>
+                            )}
+                        </div>
+
+                        {/* Messages Area */}
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4 
+                            bg-white/10 scrollbar-thin scrollbar-thumb-purple-200">
+                            {selectedUser ? (
+                                messages.map((msg, index) => (
+                                    <div 
+                                        key={index} 
+                                        className={`flex ${
+                                            msg.sender === current._id 
+                                                ? 'justify-end' 
+                                                : 'justify-start'
+                                        }`}
+                                    >
+                                        <div 
+                                            className={`
+                                                max-w-xs p-3 rounded-xl shadow-md
+                                                ${msg.sender === current._id 
+                                                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white' 
+                                                    : 'bg-white border border-gray-200 text-gray-800'}
+                                                transition-all duration-300 hover:scale-[1.02]
+                                            `}
+                                        >
+                                            {msg.content}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center text-gray-500 mt-10">
+                                    Chọn một người dùng để bắt đầu trò chuyện
+                                </div>
+                            )}
+                            <div ref={messagesEndRef} />
+                        </div>
+
+                        {isTyping && (
+                            <div className="text-sm text-gray-500 italic p-2 bg-white/20">
+                                {selectedUser.firstname} đang soạn tin...
+                            </div>
+                        )}
+
+                        {/* Message Input */}
+                        {selectedUser && (
+                            <div className="p-4 border-t border-white/20 bg-white/30">
+                                <div className="flex space-x-2">
+                                    <input
+                                        type="text"
+                                        className="flex-1 px-4 py-3 border border-purple-200 
+                                        rounded-xl bg-purple-50/50 text-sm
+                                        focus:ring-2 focus:ring-purple-300 transition-all duration-300"
+                                        value={newMessage}
+                                        onChange={e => {
+                                            setNewMessage(e.target.value)
+                                            handleTyping()
+                                        }}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder="Nhập tin nhắn..."
+                                    />
+                                    <button 
+                                        onClick={handleSend} 
+                                        className="bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 
+                                        text-white px-6 py-3 rounded-xl 
+                                        hover:opacity-90 transition-all duration-300 
+                                        transform hover:scale-[1.02] active:scale-[0.98]
+                                        flex items-center justify-center space-x-2"
+                                        disabled={!newMessage.trim()}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                        </svg>
+                                        <span>Gửi</span>
+                                    </button>
                                 </div>
                             </div>
-                        ))
-                    ) : (
-                        <div className="text-center text-gray-500 mt-10">
-                            Chọn một người dùng để bắt đầu trò chuyện
-                        </div>
-                    )}
-                    <div ref={messagesEndRef} />
+                        )}
+                    </div>
                 </div>
-                {isTyping && (
-                    <div className="text-gray-500 italic p-2">
-                        {selectedUser.firstname} is typing...
-                    </div>
-                )}
-
-                {/* Message Input */}
-                {selectedUser && (
-                    <div className="p-4 border-t flex">
-                        <input
-                            type="text"
-                            className="flex-1 border rounded-l px-3 py-2"
-                            value={newMessage}
-                            onChange={e => {
-                                setNewMessage(e.target.value)
-                                handleTyping()
-                            }}
-                            onKeyDown={handleKeyDown}
-                            placeholder="Nhập tin nhắn..."
-                        />
-                        <button 
-                            onClick={handleSend} 
-                            className="bg-blue-500 text-white px-4 py-2 rounded-r"
-                            disabled={!newMessage.trim()}
-                        >
-                            Gửi
-                        </button>
-                    </div>
-                )}
             </div>
         </div>
     )

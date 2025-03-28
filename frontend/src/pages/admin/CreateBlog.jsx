@@ -28,6 +28,7 @@ const CreateBlog = () => {
       handlePreviewImage(imageFile);
     }
   }, [watch("image")]);
+
   const handlePublish = async ({ image, ...data }) => {
     const payload = new FormData()
     for (let i of Object.entries(data)) payload.append(i[0], i[1])
@@ -45,72 +46,81 @@ const CreateBlog = () => {
       toast.success(response.mes)
     } else toast.error(response.mes)
   }
+
   return (
-    <div className="w-full flex flex-col gap-4 bg-gray-50 relative">
-      <div className="h-[69px] w-full"></div>
-      <div className="p-4 border-b w-full bg-gray-50 justify-between flex items-center fixed top-0">
-        <h1 className="text-3xl font-bold tracking-tight">Tạo bài viết</h1>
-      </div>
-      <div className="px-4 flex flex-col gap-4">
-        <InputForm
-          id="title"
-          errors={errors}
-          validate={{ required: "This field cannot empty." }}
-          register={register}
-          label="Tựa đề"
-          placeholder="Nhập tựa đề bài viết"
-        />
-        <InputForm
-          id="hashtags"
-          errors={errors}
-          validate={{ required: "This field cannot empty." }}
-          register={register}
-          label="Tags"
-          placeholder="Mỗi tag cách nhau dấu phẩy"
-        />
-        <MdEditor
-          id="description"
-          errors={errors}
-          validate={{ required: "This field cannot empty." }}
-          register={register}
-          label="Nội dung bài viết"
-          height={650}
-          setValue={setValue}
-          value={watch("description")}
-        />
-        <div>
-          <label className="block text-xl font-medium text-gray-700 mb-2">
-            Hình ảnh
-          </label>
-          <input
-            type="file"
-            id="image"
-            {...register("image", { required: "This field cannot be empty." })}
-            className="border p-2 w-full rounded-md"
+    <div className="w-full bg-white/30 backdrop-blur-xl rounded-2xl p-6 shadow-2xl">
+      <h1 className="flex justify-between items-center text-3xl font-bold mb-6 pb-4 border-b-2 border-transparent">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
+          Tạo bài viết
+        </span>
+      </h1>
+      <div className="p-4">
+        <form onSubmit={handleSubmit(handlePublish)}>
+          <InputForm
+            label="Tựa đề"
+            id="title"
+            errors={errors}
+            validate={{ required: "Không được để trống" }}
+            register={register}
+            placeholder="Nhập tựa đề bài viết"
+            fullWidth
           />
-          {errors.image && (
-            <small className="text-xs text-red-500">
-              {errors.image.message}
-            </small>
-          )}
-        </div>
-        {preview.image && (
-          <div className="py-4">
-            <img
-              src={preview.image}
-              alt="Preview"
-              className="w-32 h-32 object-cover rounded-md shadow-md"
+          <div className="w-full my-6">
+            <InputForm
+              label="Tags"
+              id="hashtags"
+              errors={errors}
+              validate={{ required: "Không được để trống" }}
+              register={register}
+              placeholder="Mỗi tag cách nhau dấu phẩy"
+              fullWidth
             />
           </div>
-        )}
-        <div className="my-6">
-          <Button
-            disabled={isLoading}
-            handleOnClick={handleSubmit(handlePublish)}
-          >
-            Đăng bài
-          </Button>
-        </div>
+          <MdEditor
+            id="description"
+            errors={errors}
+            validate={{ required: "Không được để trống" }}
+            register={register}
+            label="Nội dung bài viết"
+            height={650}
+            setValue={setValue}
+            value={watch("description")}
+          />
+          <div className="flex flex-col gap-2 mt-8">
+            <label className="font-semibold text-purple-600" htmlFor="image">
+              Hình ảnh
+            </label>
+            <input
+              type="file"
+              id="image"
+              {...register("image", { required: "Không được để trống" })}
+              className="file:mr-4 file:rounded-full file:border-0 file:bg-purple-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-purple-700 hover:file:bg-purple-100"
+            />
+            {errors.image && (
+              <small className="text-xs text-red-500">
+                {errors.image.message}
+              </small>
+            )}
+          </div>
+          {preview.image && (
+            <div className="my-4 border-2 border-purple-200 rounded-lg p-2 inline-block">
+              <img
+                src={preview.image}
+                alt="Preview"
+                className="w-[200px] object-contain rounded-md"
+              />
+            </div>
+          )}
+          <div className="my-6">
+            <Button 
+              type="submit" 
+              className="bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 transition-all duration-300"
+              disabled={isLoading}
+            >
+              Đăng bài
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   );

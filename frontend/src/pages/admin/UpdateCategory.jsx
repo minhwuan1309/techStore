@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import { Button, InputForm, Loading } from "components";
-import { apiUpdateCategory } from "apis";
-import { getBase64 } from "utils/helpers";
+import React, { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import { Button, InputForm, Loading } from "components"
+import { apiUpdateCategory, apiGetBrands } from "apis"
+import { getBase64 } from "utils/helpers"
 
 const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
   const {
@@ -12,97 +12,131 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
     setValue,
     watch,
     formState: { errors },
-  } = useForm();
-  const [brands, setBrands] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [preview, setPreview] = useState({ image: null });
+  } = useForm()
 
-  // Load dữ liệu danh mục khi component được render
+  const [availableBrands, setAvailableBrands] = useState([])
+  const [selectedBrands, setSelectedBrands] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [preview, setPreview] = useState({ image: null })
+  const [currentBrand, setCurrentBrand] = useState("")
+
+  // Fetch available brands
+  useEffect(() => {
+    const fetchBrands = async () => {
+      const response = await apiGetBrands()
+      if (response.success) {
+        const sortedBrands = response.brands.sort((a, b) =>
+          a.title.localeCompare(b.title)
+        )
+        setAvailableBrands(sortedBrands)
+      }
+    }
+    fetchBrands()
+  }, [])
+
+  // Load category data when component renders
   useEffect(() => {
     if (editCategory) {
-      setValue("title", editCategory.title); // Set title từ editCategory
-      setBrands(editCategory.brand || []); // Set brands từ editCategory
+      setValue("title", editCategory.title)
+      setSelectedBrands(editCategory.brand?.map((b) => b._id) || [])
     }
-  }, [editCategory, setValue]);
+  }, [editCategory, setValue])
 
+  // Handle image preview
   const handlePreviewImage = async (file) => {
-    if (!file) return;
-    const base64Image = await getBase64(file);
-    setPreview({ image: base64Image });
-  };
+    if (!file) return
+    const base64Image = await getBase64(file)
+    setPreview({ image: base64Image })
+  }
 
-  // Hiển thị hình ảnh hiện tại nếu không có ảnh mới
+  // Display current image if no new image
   useEffect(() => {
     if (editCategory?.image && !watch("image")?.[0]) {
-      setPreview({ image: editCategory.image });
+      setPreview({ image: editCategory.image })
     }
 
-    const imageFile = watch("image")?.[0];
+    const imageFile = watch("image")?.[0]
     if (imageFile) {
-      handlePreviewImage(imageFile);
+      handlePreviewImage(imageFile)
     }
-  }, [watch("image"), editCategory]);
+  }, [watch("image"), editCategory])
 
-  // Submit form
+  // Add brand to selected brands
+  const handleAddBrand = () => {
+    if (!currentBrand) {
+      toast.error("Vui lòng chọn thương hiệu!")
+      return
+    }
 
-  // Thêm và xóa brand input
-  const addBrandField = () => setBrands([...brands, ""]);
-  const removeBrandField = (index) =>
-    setBrands(brands.filter((_, i) => i !== index));
-  const handleBrandChange = (index, value) => {
-    const updatedBrands = [...brands];
-    updatedBrands[index] = value;
-    setBrands(updatedBrands);
-  };
+    if (selectedBrands.includes(currentBrand)) {
+      toast.error("Thương hiệu này đã được chọn!")
+      return
+    }
 
-  
+    setSelectedBrands((prev) => [...prev, currentBrand])
+    setCurrentBrand("")
+  }
+
+  // Remove brand from selected brands
+  const handleRemoveBrand = (brandId) => {
+    setSelectedBrands((prev) => prev.filter((id) => id !== brandId))
+  }
+
+  // Update category
   const handleUpdateCategory = async (data) => {
-    setIsLoading(true);
+    setIsLoading(true)
 
     try {
-      const formData = new FormData();
-      formData.append("title", data.title);
-      brands
-        .filter((brand) => brand.trim() !== "")
-        .forEach((brand, index) => {
-          formData.append(`brand[${index}]`, brand);
-        });
-      formData.append("image", data.image?.[0]);
+      if (selectedBrands.length === 0) {
+        toast.error("Vui lòng chọn ít nhất một thương hiệu!")
+        setIsLoading(false)
+        return
+      }
+
+      const formData = new FormData()
+      formData.append("title", data.title)
+
+      selectedBrands.forEach((brandId) => {
+        formData.append("brand[]", brandId)
+      })
+
+      if (data.image?.[0]) {
+        formData.append("image", data.image[0])
+      }
 
       const response = await apiUpdateCategory(formData, editCategory._id, {
         headers: { "Content-Type": "multipart/form-data" },
-      });
+      })
 
       if (response.success) {
-        toast.success("Cập nhật danh mục thành công!");
-
-        // Gọi lại hàm làm mới danh sách từ ManageCategory
-        render(); // render được truyền từ ManageCategory
-        setEditCategory(null); // Đóng form
+        toast.success("Cập nhật danh mục thành công!")
+        render()
+        setEditCategory(null)
       } else {
-        toast.error(response.message || "Cập nhật danh mục thất bại.");
+        toast.error(response.message || "Cập nhật danh mục thất bại.")
       }
     } catch (error) {
-      console.error("Error:", error.response?.data || error.message);
+      console.error("Error:", error.response?.data || error.message)
       toast.error(
         error.response?.data?.message ||
           "Đã xảy ra lỗi trong quá trình cập nhật."
-      );
+      )
     }
 
-    setIsLoading(false);
-  };
-
+    setIsLoading(false)
+  }
 
   return (
-    <div className="w-full flex flex-col gap-6 bg-gray-100 p-6 rounded-lg shadow-md relative">
+    <div className="w-full bg-white rounded-2xl p-6 shadow-2xl max-w-3xl mx-auto">
       <div className="flex justify-between items-center border-b pb-4">
-        <h1 className="text-3xl font-bold text-gray-700">Cập nhật danh mục</h1>
+        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
+          Cập nhật danh mục
+        </h1>
         <span
-          className="text-main hover:underline cursor-pointer"
+          className="text-purple-600 hover:underline cursor-pointer"
           onClick={() => setEditCategory(null)}
         >
-          Cancel
+          Quay lại
         </span>
       </div>
       {isLoading ? (
@@ -110,7 +144,7 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
       ) : (
         <form
           onSubmit={handleSubmit(handleUpdateCategory)}
-          className="flex flex-col gap-4"
+          className="space-y-6 mt-6"
         >
           {/* Category Name */}
           <InputForm
@@ -122,40 +156,73 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
             placeholder="Nhập tên danh mục"
           />
 
-          {/* Brands */}
-          <div className="space-y-2 py-4">
-            <label className="font-semibold text-xl">Thương hiệu</label>
-            {brands.map((brand, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-4 border rounded-md p-2 bg-white"
+          {/* Brand Selection */}
+          <div className="space-y-4">
+            <label className="font-semibold">Chọn thương hiệu:</label>
+
+            <div className="flex gap-4">
+              <select
+                value={currentBrand}
+                onChange={(e) => setCurrentBrand(e.target.value)}
+                className="flex-grow h-11 bg-white/50 backdrop-blur-sm border border-purple-200 rounded-xl"
               >
-                <input
-                  type="text"
-                  value={brand}
-                  onChange={(e) => handleBrandChange(index, e.target.value)}
-                  placeholder={`Thương hiệu ${index + 1}`}
-                  className="border p-2 w-full rounded-md"
-                />
-                <Button
-                  handleOnClick={() => removeBrandField(index)}
-                  className="text-red-500"
-                >
-                  Xóa
-                </Button>
+                <option value="">Chọn thương hiệu</option>
+                {availableBrands.map((brand) => (
+                  <option key={brand._id} value={brand._id}>
+                    {brand.title}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                type="button"
+                onClick={handleAddBrand}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl hover:opacity-90"
+              >
+                Thêm thương hiệu
+              </button>
+            </div>
+
+            {/* Selected Brands Display */}
+            {selectedBrands.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-lg font-medium mb-2">
+                  Các thương hiệu đã chọn:
+                </h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {selectedBrands.map((brandId) => {
+                    const brand = availableBrands.find(
+                      (b) => b._id === brandId
+                    )
+                    return (
+                      <div
+                        key={brandId}
+                        className="flex justify-between items-center bg-purple-100 p-2 rounded-xl"
+                      >
+                        <span>{brand?.title}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveBrand(brandId)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-            ))}
-            <Button handleOnClick={addBrandField}>Thêm thương hiệu</Button>
+            )}
           </div>
+
+          {/* Image Upload */}
           <div>
-            <label className="block text-xl font-medium text-gray-700 mb-2">
-              Hình ảnh
-            </label>
+            <label className="block text-gray-700 mb-2">Hình ảnh</label>
             <input
               type="file"
               id="image"
               {...register("image")}
-              className="border p-2 w-full rounded-md"
+              className="h-11 bg-white/50 backdrop-blur-sm border border-purple-200 rounded-xl w-full p-2"
             />
             {errors.image && (
               <small className="text-xs text-red-500">
@@ -167,28 +234,28 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
           {/* Preview Thumbnail */}
           {preview.image && (
             <div className="py-4">
-              <label className="block text-lg font-medium text-gray-700 mb-2">
-                Preview
-              </label>
+              <label className="block text-gray-700 mb-2">Preview</label>
               <img
                 src={preview.image}
                 alt="Preview"
-                className="w-32 h-32 object-cover rounded-md shadow-md"
+                className="w-32 h-32 object-cover rounded-xl shadow-md"
               />
             </div>
           )}
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            className="justify-end bg-blue-500 text-white px-4 py-2 rounded-md "
-          >
-            Cập nhật danh mục
-          </Button>
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-xl hover:opacity-90"
+            >
+              Cập nhật danh mục
+            </button>
+          </div>
         </form>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default UpdateCategory;
+export default UpdateCategory
