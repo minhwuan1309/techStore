@@ -15,6 +15,7 @@ const path = {
   CHECKOUT: "checkout",
   PRODUCTS: "products",
   CONFIRM_ORDER: "confirm-order",
+  CONFIRM_ORDER__OID: "confirm-order/:oid",
 
   // Admin
   ADMIN: "admin",

@@ -29,7 +29,7 @@ import {
   Wishlist,
   Checkout,
   DetailCart,
-} from "pages/user";
+} from "pages/client";
 import path from "utils/path"
 import { getCategories } from "store/app/asyncActions"
 import { useDispatch, useSelector } from "react-redux"
@@ -41,7 +41,7 @@ import BlogsPage from "pages/public/Blogs"
 import CreateCategory from "pages/admin/CreateCategory"
 import ManageCategories from "pages/admin/ManageCategories"
 import ManageCoupon from "pages/admin/ManageCoupon"
-import ConfirmOrder from "pages/user/ConfirmOrder";
+import ConfirmOrder from "pages/client/OrderConfirmed";
 import Chat from "pages/admin/Chat"
 import AdminPersonal from "pages/admin/AdminPersonal";
 import ManageBrands from "pages/admin/ManageBrands";
@@ -102,11 +102,11 @@ function App() {
           <Route path={path.MY_CART} element={<DetailCart />} />
           <Route path={path.WISHLIST} element={<Wishlist />} />
           <Route path={path.HISTORY} element={<History />} />
-          <Route path={path.CONFIRM_ORDER} element={<ConfirmOrder />} />
-
         </Route>
         <Route path={path.FINAL_REGISTER} element={<FinalRegister />} />
         <Route path={path.LOGIN} element={<Login />} />
+        <Route path={path.CONFIRM_ORDER__OID} element={<ConfirmOrder />} />
+
       </Routes>
       <ToastContainer
         position="top-right"

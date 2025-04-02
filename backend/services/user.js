@@ -86,6 +86,7 @@ class UserService {
     }
   }
 
+
   async finalRegister(token) {
     const notActivedEmail = await User.findOne({ email: new RegExp(`${token}$`) })
     

@@ -29,6 +29,10 @@ export const slugToTitleMap = {
   "dong-ho-thong-minh": "Đồng hồ thông minh"
 };
 
+export const formatTitle = (str) =>
+  str.charAt(0).toUpperCase() + str.slice(1).replace(/-/g, " ");
+
+
 export const formatMoney = (number) =>
   Number(number?.toFixed(1)).toLocaleString()
 

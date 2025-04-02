@@ -16,6 +16,7 @@ import { apiGetProducts } from "../../apis"
 import { sorts } from "../../utils/contants"
 import useDebounce from "../../hooks/useDebounce"
 import { set } from "lodash"
+import { formatTitle } from "utils/helpers"
 
 const Products = () => {
   const navigate = useNavigate()
@@ -27,19 +28,38 @@ const Products = () => {
   const [filterPrice, setFilterPrice] = useState({ from: "", to: "" })
   const { category } = useParams()
   const [selectedColor, setSelectedColor] = useState(null)
+  const categoryTitle = products?.[0]?.category?.title || formatTitle(category || "Sản phẩm");
 
   const debouncedSearchQuery = useDebounce(searchQuery, 800)
 
   const fetchProductsByCategory = async (queries) => {
-    if (category && category !== "products") queries.category = category
+    if (category && category !== "products") {
+      const decodedCategory = decodeURIComponent(category);
+      queries.category = decodedCategory;
+    }    
     queries.limit = 8
     const response = await apiGetProducts(queries)
     if (response.success) setProducts(response)
   }
+  useEffect(() => {
+    const qParam = params.get("q");
+    if (qParam) {
+      setSearchQuery(qParam);
+    }
+  }, [params])
+  useEffect(() => {
+    if (sort) {
+      navigate({
+        pathname: `/${category}`,
+        search: createSearchParams({ sort }).toString(),
+      })
+    }
+  }, [sort])
 
   useEffect(() => {
     const queries = Object.fromEntries([...params])
     let priceQuery = {}
+    
     if (queries.to && queries.from) {
       priceQuery = {
         $and: [
@@ -52,13 +72,25 @@ const Products = () => {
       if (queries.from) queries.price = { gte: queries.from }
       if (queries.to) queries.price = { lte: queries.to }
     }
-
+    
     delete queries.to
     delete queries.from
+  
     const q = { ...priceQuery, ...queries }
     fetchProductsByCategory(q)
     window.scrollTo(0, 0)
-  }, [params, debouncedSearchQuery])
+  }, [params]) // Only depend on params
+  
+  useEffect(() => {
+    if (debouncedSearchQuery !== undefined) {
+      navigate({
+        pathname: `/${category || "products"}`,
+        search: debouncedSearchQuery ? 
+          createSearchParams({ q: debouncedSearchQuery }).toString() : 
+          ""
+      })
+    }
+  }, [debouncedSearchQuery, navigate, category])
 
   const changeActiveFilter = useCallback(
     (name) => {
@@ -95,15 +127,6 @@ const Products = () => {
     setParams(newParams)
   }
 
-  useEffect(() => {
-    if (sort) {
-      navigate({
-        pathname: `/${category}`,
-        search: createSearchParams({ sort }).toString(),
-      })
-    }
-  }, [sort])
-
   const handleSearchChange = (event) => {
     const value = event.target.value
     setSearchQuery(value)
@@ -126,13 +149,12 @@ const Products = () => {
       <div className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white py-12">
         <div className="lg:w-main w-full px-4 m-auto">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            {category
-              ? category.charAt(0).toUpperCase() + category.slice(1)
-              : "Tất Cả Sản Phẩm"}
+            {categoryTitle}
           </h1>
-          <Breadcrumb category={category || "Sản phẩm"} />
+          <Breadcrumb category={categoryTitle} />
         </div>
       </div>
+
 
       {/* Filters & Controls */}
       <div className="lg:w-main w-full px-4 m-auto mt-8">

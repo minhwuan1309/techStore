@@ -13,7 +13,7 @@ const ProductCard = ({
 }) => {
   return (
     <div
-      onClick={(e) => navigate(`/${category?.toLowerCase()}/${pid}/${title}`)}
+      onClick={(e) => navigate(`/${category?.title?.toLowerCase?.()}/${pid}/${title}`)}
       className="col-span-1 cursor-pointer group"
     >
       <div className="flex flex-col sm:flex-row w-full bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-100">

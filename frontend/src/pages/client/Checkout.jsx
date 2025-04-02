@@ -150,11 +150,12 @@ const Checkout = ({ dispatch, navigate }) => {
           />
         </div>
 
-        <div className="col-span-8 space-y-6">
+        <div className="col-span-8 space-y-5">
           <div className="bg-gray-100 rounded-lg p-6 border border-gray-200">
-            <h2 className="text-2xl font-semibold mb-4 text-indigo-600 border-b-2 border-indigo-600 pb-2">
+            <h2 className="text-2xl font-semibold mb-5 text-indigo-600 border-b border-indigo-300 pb-3">
               Danh sách sản phẩm
             </h2>
+
             <table className="table-auto w-full border-collapse">
               <thead>
                 <tr className="bg-indigo-50 text-indigo-700">
@@ -169,16 +170,27 @@ const Checkout = ({ dispatch, navigate }) => {
                     className="border-b hover:bg-gray-50 transition"
                     key={el._id || index}
                   >
-                    <td className="p-3">{el.title}</td>
-                    <td className="p-3 text-center">{el.quantity}</td>
-                    <td className="p-3 text-right flex flex-col">
-                      {formatMoney(el.price) + " VNĐ"} 
-                      {el.note && <span className="text-red-500 text-sm ml-2">({el.note})</span>}
+                    <td className="p-3 align-top">{el.title}</td>
+                    <td className="p-3 text-center align-top">{el.quantity}</td>
+                    <td className="p-3 text-right align-top">
+                      <div className="flex flex-col items-end">
+                        <span>{formatMoney(el.price)} VNĐ</span>
+                        {el.note && (
+                          <span className="text-red-500 text-sm mt-1">({el.note})</span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+
+            <div className="mt-6">
+              <span className="text-base md:text-lg font-medium text-gray-700">
+                Địa chỉ giao hàng:{" "}
+                <span className="font-semibold">{current?.address}</span>
+              </span>
+            </div>
           </div>
 
           <div className="bg-gray-100 rounded-lg p-6 border border-gray-200">

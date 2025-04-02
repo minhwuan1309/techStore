@@ -1,6 +1,7 @@
 const Product = require("../models/product")
 const slugify = require("slugify")
 const makeSKU = require("uniqid")
+const ProductCategory  = require("../models/productCategory")
 
 class ProductService {
   async createProduct(productData, files) {
@@ -26,101 +27,134 @@ class ProductService {
   }
 
   async getProduct(productId) {
-    const product = await Product.findById(productId).populate({
-      path: "ratings",
-      populate: {
-        path: "postedBy",
-        select: "firstname lastname avatar",
-      },
-    })
-    
-    return {
-      success: !!product,
-      productData: product ? product : "Không thể lấy thông tin sản phẩm",
-      statusCode: product ? 200 : 404
-    }
-  }
-
-  async getProducts(queries) {
-    // Tách các trường đặc biệt ra khỏi query
-    const excludeFields = ["limit", "sort", "page", "fields"]
-    const queryObj = { ...queries }
-    excludeFields.forEach((el) => delete queryObj[el])
-
-    // Format lại các operators cho đúng cú pháp mongoose
-    let queryString = JSON.stringify(queryObj)
-    queryString = queryString.replace(
-      /\b(gte|gt|lt|lte)\b/g,
-      (macthedEl) => `$${macthedEl}`
-    )
-    
-    const formatedQueries = JSON.parse(queryString)
-    let colorQueryObject = {}
-    
-    if (queryObj?.title)
-      formatedQueries.title = { $regex: queryObj.title, $options: "i" }
-    if (queryObj?.category)
-      formatedQueries.category = { $regex: queryObj.category, $options: "i" }
-    if (queryObj?.brand)
-      formatedQueries.brand = { $regex: queryObj.brand, $options: "i" }
-    if (queryObj?.color) {
-      delete formatedQueries.color
-      const colorArr = queryObj.color?.split(",")
-      const colorQuery = colorArr.map((el) => ({
-        color: { $regex: el, $options: "i" },
-      }))
-      colorQueryObject = { $or: colorQuery }
-    }
-    
-    let queryObject = {}
-    if (queryObj?.q) {
-      delete formatedQueries.q
-      queryObject = {
-        $or: [
-          { color: { $regex: queryObj.q, $options: "i" } },
-          { title: { $regex: queryObj.q, $options: "i" } },
-          { category: { $regex: queryObj.q, $options: "i" } },
-          { brand: { $regex: queryObj.q, $options: "i" } },
-        ],
-      }
-    }
-    
-    const qr = { ...colorQueryObject, ...formatedQueries, ...queryObject }
-    let queryCommand = Product.find(qr)
-    .populate("brand", "title")
-    .populate("category", "title")
-  
-
-    // Sorting
-    if (queries.sort) {
-      const sortBy = queries.sort.split(",").join(" ")
-      queryCommand = queryCommand.sort(sortBy)
-    }
-
-    // Fields limiting
-    if (queries.fields) {
-      const fields = queries.fields.split(",").join(" ")
-      queryCommand = queryCommand.select(fields)
-    }
-
-    // Pagination
-    const page = +queries.page || 1
-    const limit = +queries.limit || process.env.LIMIT_PRODUCTS
-    const skip = (page - 1) * limit
-    queryCommand.skip(skip).limit(limit)
-    
     try {
-      const response = await queryCommand.exec()
-      const counts = await Product.find(qr).countDocuments()
-      
+      const product = await Product.findById(productId)
+      .populate("brand", "title")
+      .populate("category", "title slug")
+      .populate("ratings.postedBy", "firstname lastname avatar")
+  
+      if (!product) {
+        return {
+          success: false,
+          statusCode: 404,
+          mes: "Không tìm thấy sản phẩm"
+        };
+      }
+  
       return {
         success: true,
-        counts,
-        products: response,
-        statusCode: 200
-      }
+        statusCode: 200,
+        productData: product
+      };
     } catch (error) {
-      throw new Error(error.message)
+      return {
+        success: false,
+        statusCode: 500,
+        mes: "Đã xảy ra lỗi khi lấy sản phẩm",
+      };
+    }
+  }
+  
+  
+
+  async getProducts(queries) {
+    try {
+      const excludeFields = ["limit", "sort", "page", "fields"];
+      const queryObj = { ...queries };
+      excludeFields.forEach((el) => delete queryObj[el]);
+  
+      // Convert operator syntax
+      let queryString = JSON.stringify(queryObj);
+      queryString = queryString.replace(
+        /\b(gte|gt|lt|lte)\b/g,
+        (match) => `$${match}`
+      );
+      const formatedQueries = JSON.parse(queryString);
+  
+      // 🔍 Convert category slug → _id
+      if (queryObj?.category) {
+        const categoryDoc = await ProductCategory.findOne({ slug: queryObj.category });
+        if (categoryDoc?._id) {
+          formatedQueries.category = categoryDoc._id;
+        } else {
+          return {
+            success: true,
+            products: [],
+            counts: 0,
+            statusCode: 200,
+          };
+        }
+      }
+  
+      // 🔍 Color filter (multi-color support)
+      let colorQueryObject = {};
+      if (queryObj?.color) {
+        delete formatedQueries.color;
+        const colorArr = queryObj.color.split(",");
+        const colorQuery = colorArr.map((el) => ({
+          color: { $regex: el, $options: "i" },
+        }));
+        colorQueryObject = { $or: colorQuery };
+      }
+  
+      // 🔍 Keyword search (q)
+      let queryObject = {};
+      if (queryObj?.q) {
+        queryObject = {
+          $or: [
+            { title: { $regex: queryObj.q, $options: "i" } },
+            { color: { $regex: queryObj.q, $options: "i" } },
+          ],
+        };
+      }
+  
+      // 🔎 Tổng hợp điều kiện
+      const qr = {
+        ...formatedQueries,
+        ...colorQueryObject,
+        ...queryObject,
+      };
+  
+      // Tạo query
+      let queryCommand = Product.find(qr)
+        .populate("brand", "title")
+        .populate("category", "title slug");
+  
+      // Sort
+      if (queries.sort) {
+        const sortBy = queries.sort.split(",").join(" ");
+        queryCommand = queryCommand.sort(sortBy);
+      }
+  
+      // Field selection
+      if (queries.fields) {
+        const fields = queries.fields.split(",").join(" ");
+        queryCommand = queryCommand.select(fields);
+      }
+  
+      // Pagination
+      const page = +queries.page || 1;
+      const limit = +queries.limit || +process.env.LIMIT_PRODUCTS || 8;
+      const skip = (page - 1) * limit;
+      queryCommand = queryCommand.skip(skip).limit(limit);
+  
+      // Run query
+      const response = await queryCommand.exec();
+      const counts = await Product.countDocuments(qr);
+  
+      return {
+        success: true,
+        products: response,
+        counts,
+        currentPage: page,
+        statusCode: 200,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Đã xảy ra lỗi khi lấy danh sách sản phẩm.",
+        statusCode: 500,
+      };
     }
   }
 

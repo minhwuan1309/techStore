@@ -25,7 +25,7 @@ const UpdateProduct = ({ editProduct, render, setEditProduct }) => {
             price: editProduct?.price || '',
             quantity: editProduct?.quantity || '',
             color: editProduct?.color || '',
-            category: editProduct?.category || '',
+            category: editProduct?.category?._id || '',   // ✅ Sửa tại đây
             brand: editProduct?.brand?._id || '',
         })
         setPayload({ description: typeof editProduct?.description === 'object' ? editProduct?.description?.join(', ') : editProduct?.description })

@@ -444,6 +444,13 @@ class OrderService {
         orderDetails.paymentMethod
       }</p>
       <p>Đơn hàng của bạn sẽ được giao trong vòng 2 ngày.</p>
+      
+      <div style="margin-top: 30px; text-align: center;">
+        <a href="${confirmationUrl}" style="background-color: #4CAF50; color: white; padding: 14px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-weight: bold; font-size: 16px;">
+          Đã nhận được đơn hàng
+        </a>
+      </div>
+      <p style="margin-top: 20px; font-size: 14px; color: #666;">Vui lòng nhấn vào nút trên khi bạn đã nhận được đơn hàng để xác nhận với chúng tôi.</p>
     `,
     }
   
@@ -453,6 +460,39 @@ class OrderService {
     } catch (error) {
       console.error("Lỗi khi gửi email xác nhận đơn hàng:", error.message)
       return false
+    }
+  }
+  
+  // Add a new method to handle order confirmation
+  async confirmOrder(orderId) {
+    try {
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        { status: "Succeed" },
+        { new: true }
+      );
+  
+      if (!updatedOrder) {
+        return {
+          success: false,
+          message: "Không tìm thấy đơn hàng",
+          statusCode: 404
+        };
+      }
+  
+      return {
+        success: true,
+        message: "Đã cập nhật trạng thái đơn hàng thành công",
+        order: updatedOrder,
+        statusCode: 200
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Đã xảy ra lỗi khi xác nhận đơn hàng",
+        error: error.message,
+        statusCode: 500
+      };
     }
   }  
 }

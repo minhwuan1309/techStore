@@ -95,8 +95,8 @@ const ProductInfomation = ({ totalRatings, ratings, nameProduct, pid, rerender }
                                 star={el.star}
                                 updatedAt={el.updatedAt}
                                 comment={el.comment}
-                                name={`${el.postedBy?.lastname} ${el.postedBy?.firstname}`}
-                            />
+                                name={` ${el.postedBy?.firstname} ${el.postedBy?.lastname}`}
+                                />
                         ))
                     ) : (
                         <div className="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">

@@ -95,7 +95,7 @@ const Product = ({
       onMouseLeave={() => setIsShowOption(false)}
       onClick={(e) =>
         navigate(
-          `/${productData?.category?.toLowerCase()}/${productData?._id}/${
+          `/${productData?.category?.title?.toLowerCase()}/${productData?._id}/${
             productData?.title
           }`
         )

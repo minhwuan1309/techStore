@@ -4,3 +4,4 @@ export { default as Wishlist } from './Wishlist'
 export { default as History } from './History'
 export { default as Checkout } from './Checkout'
 export { default as DetailCart} from './DetailCart'
+export { default as ConfirmOrder } from "./OrderConfirmed";

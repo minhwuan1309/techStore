@@ -1,5 +1,6 @@
 const ProductCategory = require("../models/productCategory")
 const mongoose = require("mongoose")
+const {slugify} = require("../utils/helper")
 
 class ProductCategoryService {
   async createCategory(categoryData, imagePath) {
@@ -22,7 +23,8 @@ class ProductCategoryService {
     }
 
     try {
-      const response = await ProductCategory.create({ ...categoryData, image: imagePath })
+      const slug = slugify(title)
+      const response = await ProductCategory.create({ ...categoryData, slug, image: imagePath })
       return {
         success: true,
         message: "Tạo danh mục thành công.",
@@ -67,7 +69,7 @@ class ProductCategoryService {
     }
 
     try {
-      const productCategory = await ProductCategory.findById(pcid)
+      const productCategory = await ProductCategory.findById(pcid).populate("brand","title")
       if (!productCategory) {
         return {
           success: false,
@@ -104,8 +106,7 @@ class ProductCategoryService {
         statusCode: 400
       }
     }
-
-    const updateData = { title, brand }
+    const updateData = { title, brand, slug: slugify(title) }
     if (imagePath) {
       updateData.image = imagePath
     }

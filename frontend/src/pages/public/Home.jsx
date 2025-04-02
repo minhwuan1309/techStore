@@ -130,49 +130,50 @@ const Home = ({ navigate }) => {
         <div className="my-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">Thương Hiệu Hợp Tác</h2>
           <div className="w-24 h-1 bg-indigo-600 mx-auto mb-8"></div>
-          
           <div className="lg:grid hidden lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
-            {categories
-              ?.filter((el) => el.brand.length > 0)
-              ?.slice(0, 9)
-              ?.map((el) => (
-                <div key={el._id} className="col-span-1">
-                  <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                    <div className="relative h-[190px] overflow-hidden">
-                      <img
-                        src={el?.image}
-                        alt=""
-                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
-                        <h4 className="text-white font-bold uppercase p-4">{el.title}</h4>
+              {categories
+                ?.filter((el) => el.brand.length > 0)
+                ?.slice(0, 9)
+                ?.map((el) => (
+                  <div key={el._id} className="col-span-1">
+                    <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
+                      <div className="relative h-[190px] overflow-hidden">
+                        <img
+                          src={el?.image}
+                          alt=""
+                          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                          <h4 className="text-white font-bold uppercase p-4">{el.title}</h4>
+                        </div>
+                      </div>
+                      {console.log(el.title)}
+
+                      <div className="p-4">
+                        <ul className="space-y-2">
+                          {el?.brand?.map((item) => (
+                            <li 
+                              key={item._id}
+                              className="flex cursor-pointer hover:text-indigo-600 transition-colors duration-300 gap-2 items-center text-gray-700"
+                              onClick={() =>
+                                navigate({
+                                  pathname: `/${el.slug}`,
+                                  search: createSearchParams({
+                                    brand: item.title,
+                                  }).toString(),
+                                })
+                              }
+                            >
+                              <IoIosArrowForward size={14} className="text-indigo-600" />
+                              <span className="hover:translate-x-1 transition-transform duration-300">{item.title}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
-                    <div className="p-4">
-                      <ul className="space-y-2">
-                        {el?.brand?.map((item) => (
-                          <li 
-                            key={item}
-                            className="flex cursor-pointer hover:text-indigo-600 transition-colors duration-300 gap-2 items-center text-gray-700"
-                            onClick={() =>
-                              navigate({
-                                pathname: `/${el.title.toLowerCase()}`,
-                                search: createSearchParams({
-                                  brand: item,
-                                }).toString(),
-                              })
-                            }
-                          >
-                            <IoIosArrowForward size={14} className="text-indigo-600" />
-                            <span className="hover:translate-x-1 transition-transform duration-300">{item.title}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
                   </div>
-                </div>
-              ))}
-          </div>
+                ))}
+            </div>
           <div className="lg:hidden grid grid-cols-1 gap-6">
             {categories
               ?.filter((el) => el.brand.length > 0)
@@ -197,7 +198,7 @@ const Home = ({ navigate }) => {
                               className="flex cursor-pointer hover:text-indigo-600 transition-colors duration-300 gap-2 items-center text-gray-700"
                               onClick={() =>
                                 navigate({
-                                  pathname: `/${el.title.toLowerCase()}`,
+                                  pathname: `/${el.slug}`,
                                   search: createSearchParams({
                                     brand: item,
                                   }).toString(),

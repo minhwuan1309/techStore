@@ -78,18 +78,21 @@ const CreateCategory = () => {
       toast.error("Vui lòng chọn ít nhất một thương hiệu!")
       return
     }
-
+  
     const formData = new FormData()
     formData.append("title", data.title)
-    
     selectedBrands.forEach(brandId => {
       formData.append("brand[]", brandId)
     })
-
-    if (preview.image) {
-      formData.append("image", preview.image)
+  
+    const imageFile = watch("image")?.[0]
+    if (!imageFile) {
+      toast.error("Vui lòng tải hình ảnh!")
+      return
     }
-
+  
+    formData.append("image", imageFile) 
+  
     setIsLoading(true)
     try {
       const response = await apiCreateCategory(formData)
@@ -99,7 +102,7 @@ const CreateCategory = () => {
         setSelectedBrands([])
         setPreview({ image: null })
       } else {
-        toast.error("Có lỗi xảy ra. Vui lòng thử lại!")
+        toast.error(response?.message || "Có lỗi xảy ra. Vui lòng thử lại!")
       }
     } catch (error) {
       toast.error("Có lỗi xảy ra khi tạo danh mục!")
@@ -107,6 +110,7 @@ const CreateCategory = () => {
       setIsLoading(false)
     }
   }
+  
 
   return (
     <div className="w-full bg-white/30 backdrop-blur-xl rounded-2xl p-6 shadow-2xl">

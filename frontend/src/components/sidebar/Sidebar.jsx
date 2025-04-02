@@ -1,6 +1,5 @@
 import React, { memo } from "react"
 import { NavLink } from "react-router-dom"
-import { createSlug } from "utils/helpers"
 import { useSelector } from "react-redux"
 
 const Sidebar = () => {
@@ -10,7 +9,7 @@ const Sidebar = () => {
       {categories?.map((el) => (
         <NavLink
           key={el.title}
-          to={`/${el.title}`}
+          to={`/${el.slug}`}
           className={({ isActive }) =>
             `
             relative px-6 py-4 text-sm font-medium transition-all duration-300 

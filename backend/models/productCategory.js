@@ -15,6 +15,11 @@ var productCategorySchema = new mongoose.Schema({
     image:{
         type: String,
     },
+    slug: { 
+        type: String, 
+        required: true, 
+        unique: true 
+    },
     isDelete: {
         type: Boolean,
         default: false

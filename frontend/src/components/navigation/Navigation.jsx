@@ -5,7 +5,6 @@ import InputForm from "components/inputs/InputForm"
 import { useForm } from "react-hook-form"
 import path from "utils/path"
 import { IoMenuSharp } from "react-icons/io5"
-import { IoSearchOutline } from "react-icons/io5"
 
 const Navigation = () => {
   const {
@@ -36,83 +35,62 @@ const Navigation = () => {
   }, [isDirty, q])
 
   return (
-    <div className="bg-white shadow-md border-b border-gray-200">
-      <div className="md:w-main w-full mx-auto px-4 py-2 md:px-0">
-        <div className="h-[60px] flex items-center justify-between">
-          {/* Mobile Menu Button */}
-          <span
-            onClick={() => setShowMenu(true)}
-            className="text-gray-700 md:hidden hover:text-indigo-600 cursor-pointer transition-colors duration-300"
+    <div className=" md:w-main w-full h-[48px] flex items-center px-4 md:px-0 justify-between border-y bg-white shadow-sm">
+      {showMenu && (
+        <div
+          onClick={() => setShowMenu(false)}
+          className="absolute inset-0 z-[999] bg-black bg-opacity-50 flex justify-start"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-4/5 bg-white p-4 h-full flex flex-col shadow-md transform transition-transform duration-300 ease-in-out"
           >
-            <IoMenuSharp size={24} />
-          </span>
-
-          {/* Desktop Navigation */}
-          <div className="py-2 flex-auto hidden md:flex items-center">
             {navigation.map((el) => (
               <NavLink
                 to={el.path}
                 key={el.id}
+                onClick={() => setShowMenu(false)}
                 className={({ isActive }) =>
                   isActive
-                    ? "px-5 py-2 text-indigo-600 font-semibold hover:text-indigo-800 transition-all border-b-2 border-indigo-600"
-                    : "px-5 py-2 text-gray-700 hover:text-indigo-600 transition-all border-b-2 border-transparent hover:border-indigo-300"
+                    ? "py-3 border-b text-sm text-main hover:text-main font-semibold"
+                    : "py-3 border-b text-sm text-gray-600 hover:text-main"
                 }
               >
                 {el.value}
               </NavLink>
             ))}
           </div>
-
-          {/* Search Bar */}
-          {location.pathname !== "/products" && (
-            <div className="relative flex-none">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <IoSearchOutline className="text-gray-400" size={20} />
-              </div>
-              <InputForm
-                id="q"
-                register={register}
-                errors={errors}
-                placeholder="Tìm kiểm sản phẩm..."
-                style="pl-9 pr-4 py-3 w-full rounded-full border border-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-              />
-            </div>
-          )}
         </div>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      {showMenu && (
-        <div
-          onClick={() => setShowMenu(false)}
-          className="fixed inset-0 z-[999] bg-black bg-opacity-50 flex justify-start"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-4/5 bg-white h-full flex flex-col shadow-lg transform transition-transform duration-300 ease-in-out"
+      )}
+      <span
+        onClick={() => setShowMenu(true)}
+        className="text-gray-600 md:pr-12 pr-6 text-sm md:hidden hover:text-main cursor-pointer"
+      >
+        <IoMenuSharp size={20} />
+      </span>
+      <div className="py-2 flex-auto text-sm hidden md:flex items-center">
+        {navigation.map((el) => (
+          <NavLink
+            to={el.path}
+            key={el.id}
+            className={({ isActive }) =>
+              isActive
+                ? "md:pr-12 pr-6 text-sm text-main font-semibold hover:text-main transition-all"
+                : "md:pr-12 pr-6 text-sm text-gray-600 hover:text-main transition-all"
+            }
           >
-            <div className="p-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
-              <h3 className="text-white font-bold text-xl">Menu</h3>
-            </div>
-            <div className="flex flex-col p-2">
-              {navigation.map((el) => (
-                <NavLink
-                  to={el.path}
-                  key={el.id}
-                  onClick={() => setShowMenu(false)}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "py-3 px-4 mb-1 rounded-md bg-indigo-50 text-indigo-600 font-semibold"
-                      : "py-3 px-4 mb-1 rounded-md text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                  }
-                >
-                  {el.value}
-                </NavLink>
-              ))}
-            </div>
-          </div>
-        </div>
+            {el.value}
+          </NavLink>
+        ))}
+      </div>
+      {location.pathname !== "/products" && (
+        <InputForm
+          id="q"
+          register={register}
+          errors={errors}
+          placeholder="Tìm kiểm sản phẩm......."
+          style="flex-none outline-none px-4 focus:border-main focus:ring-1 focus:ring-main transition-all"
+        />
       )}
     </div>
   );

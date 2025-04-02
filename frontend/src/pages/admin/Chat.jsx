@@ -254,33 +254,45 @@ const Chat = () => {
                             />
                         </div>
                         <div className="overflow-y-auto max-h-[calc(100vh-200px)] scrollbar-thin scrollbar-thumb-purple-300">
-                            {filteredUsers.map(u => (
-                                <div
-                                    key={u._id}
-                                    onClick={() => handleSelectUser(u)}
-                                    className={`
-                                        cursor-pointer p-4 hover:bg-purple-100/50 
-                                        flex items-center transition-all duration-300
-                                        ${selectedUser?._id === u._id 
-                                            ? 'bg-gradient-to-r from-purple-100 to-pink-100' 
-                                            : ''}
-                                    `}
-                                >
-                                    <img 
-                                        src={u.avatar || '/default-avatar.png'} 
-                                        alt={u.firstname} 
-                                        className="w-12 h-12 rounded-full mr-4 
-                                        border-2 border-transparent 
-                                        bg-gradient-to-r from-purple-300 to-pink-300 p-0.5
-                                        transition-transform hover:scale-105"
-                                    />
-                                    <div>
-                                        <div className="font-semibold text-gray-800">
-                                            {u.firstname} {u.lastname}
-                                        </div>
-                                    </div>
+                        {filteredUsers.map(u => {
+                            // 🔍 Tìm đoạn chat với người dùng hiện tại
+                            const chatWithUser = chats.find(chat =>
+                            chat.participants.some(p => p._id === u._id)
+                            );
+
+                            return (
+                            <div
+                                key={u._id}
+                                onClick={() => handleSelectUser(u)}
+                                className={`
+                                cursor-pointer p-4 hover:bg-purple-100/50 
+                                flex items-center transition-all duration-300
+                                ${selectedUser?._id === u._id 
+                                    ? 'bg-gradient-to-r from-purple-100 to-pink-100' 
+                                    : ''}
+                                `}
+                            >
+                                <img 
+                                src={u.avatar || '/default-avatar.png'} 
+                                alt={u.firstname} 
+                                className="w-12 h-12 rounded-full mr-4 
+                                border-2 border-transparent 
+                                bg-gradient-to-r from-purple-300 to-pink-300 p-0.5
+                                transition-transform hover:scale-105"
+                                />
+                                <div className="flex flex-col">
+                                <div className="font-semibold text-gray-800">
+                                    {u.firstname} {u.lastname}
                                 </div>
-                            ))}
+                                {chatWithUser?.lastMessage && (
+                                    <div className="text-sm text-gray-500 line-clamp-1 max-w-[200px]">
+                                    {chatWithUser.lastMessage}
+                                    </div>
+                                )}
+                                </div>
+                            </div>
+                            );
+                        })}
                         </div>
                     </div>
 

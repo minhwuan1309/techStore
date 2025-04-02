@@ -58,22 +58,28 @@ const getDashboard = asyncHandler(async (req, res) => {
   })
 })
 
-const confirmReceivedOrder = asyncHandler(async (req, res)=>{
-  const {orderId} = req.params
-  const result = await orderService.updateStatus(orderId, {status: 'Succeed'})
+const confirmOrder = async (req, res) => {
+  try {
+    const { oid } = req.params
+    const response = await orderService.confirmOrder(oid)
 
-  if(result.success){
-    return res.status(200).json({
-      success: true,
-      message: 'Cập nhật trạng thái đơn hàng thành công'
-    })
-  }else{
-    return res.status(400).json({
+    if (req.headers['content-type'] === 'application/json') {
+      return res.status(response.statusCode).json(response)
+    }
+
+    if (response.success) {
+      return res.redirect(`${process.env.CLIENT_URL}/order-confirmed?success=true`)
+    } else {
+      return res.redirect(`${process.env.CLIENT_URL}/order-confirmed?success=false&message=${encodeURIComponent(response.message)}`)
+    }
+  } catch (error) {
+    return res.status(500).json({
       success: false,
-      message: 'Không thể cập nhật trạng thái đơn hàng'
+      message: error.message,
     })
   }
-})
+
+}
 
 module.exports = {
   createOrder,
@@ -82,5 +88,5 @@ module.exports = {
   getOrders,
   deleteOrderByAdmin,
   getDashboard,
-  confirmReceivedOrder
+  confirmOrder
 }
