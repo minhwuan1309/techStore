@@ -11,6 +11,7 @@ import {
   SearchItem,
   InputSelect,
   Pagination,
+  InputField,
 } from "../../components"
 import { apiGetProducts } from "../../apis"
 import { sorts } from "../../utils/contants"
@@ -24,13 +25,15 @@ const Products = () => {
   const [activeClick, setActiveClick] = useState(null)
   const [params, setParams] = useSearchParams()
   const [sort, setSort] = useState("")
+  const [queries, setQueries] = useState({ q: "" })
   const [searchQuery, setSearchQuery] = useState("")
   const [filterPrice, setFilterPrice] = useState({ from: "", to: "" })
   const { category } = useParams()
   const [selectedColor, setSelectedColor] = useState(null)
   const categoryTitle = products?.[0]?.category?.title || formatTitle(category || "Sản phẩm");
 
-  const debouncedSearchQuery = useDebounce(searchQuery, 800)
+  const queriesDebounce = useDebounce(queries.q, 800)
+
 
   const fetchProductsByCategory = async (queries) => {
     if (category && category !== "products") {
@@ -47,6 +50,8 @@ const Products = () => {
       setSearchQuery(qParam);
     }
   }, [params])
+
+  
   useEffect(() => {
     if (sort) {
       navigate({
@@ -57,40 +62,48 @@ const Products = () => {
   }, [sort])
 
   useEffect(() => {
-    const queries = Object.fromEntries([...params])
-    let priceQuery = {}
-    
-    if (queries.to && queries.from) {
-      priceQuery = {
-        $and: [
-          { price: { gte: queries.from } },
-          { price: { lte: queries.to } },
-        ],
-      }
-      delete queries.price
-    } else {
-      if (queries.from) queries.price = { gte: queries.from }
-      if (queries.to) queries.price = { lte: queries.to }
-    }
-    
-    delete queries.to
-    delete queries.from
+    const queryObj = Object.fromEntries([...params])
+    const finalQuery = {}
   
-    const q = { ...priceQuery, ...queries }
-    fetchProductsByCategory(q)
+    // Tìm theo khoảng giá
+    if (queryObj.to && queryObj.from) {
+      finalQuery.$and = [
+        { price: { gte: queryObj.from } },
+        { price: { lte: queryObj.to } },
+      ]
+    } else {
+      if (queryObj.from) finalQuery.price = { gte: queryObj.from }
+      if (queryObj.to) finalQuery.price = { lte: queryObj.to }
+    }
+  
+    // Merge các query còn lại
+    const merged = {
+      ...queryObj,
+      ...finalQuery,
+    }
+  
+    delete merged.to
+    delete merged.from
+  
+    fetchProductsByCategory(merged)
     window.scrollTo(0, 0)
-  }, [params]) // Only depend on params
+  }, [params])
+  
   
   useEffect(() => {
-    if (debouncedSearchQuery !== undefined) {
+    if (queriesDebounce !== undefined) {
+      const currentParams = Object.fromEntries([...params])
+      const newParams = { ...currentParams, q: queriesDebounce }
+  
       navigate({
         pathname: `/${category || "products"}`,
-        search: debouncedSearchQuery ? 
-          createSearchParams({ q: debouncedSearchQuery }).toString() : 
-          ""
+        search: createSearchParams(newParams).toString(),
       })
+  
+      fetchProductsByCategory(newParams)
     }
-  }, [debouncedSearchQuery, navigate, category])
+  }, [queriesDebounce])
+  
 
   const changeActiveFilter = useCallback(
     (name) => {
@@ -166,12 +179,13 @@ const Products = () => {
                 Tìm theo tên sản phẩm
               </label>
               <div className="relative">
-                <input
-                  type="text"
+              <InputField
+                  nameKey="q"
+                  value={queries.q}
+                  setValue={setQueries}
                   placeholder="Nhập tên sản phẩm..."
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                  fullWidth
+                  isHideLabel
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
