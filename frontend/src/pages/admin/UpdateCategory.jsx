@@ -110,8 +110,8 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
 
       if (response.success) {
         toast.success("Cập nhật danh mục thành công!")
-        render()
-        setEditCategory(null)
+        render() // Gọi lại hàm làm mới danh sách danh mục
+        setEditCategory(null) // Đóng modal chỉnh sửa
       } else {
         toast.error(response.message || "Cập nhật danh mục thất bại.")
       }

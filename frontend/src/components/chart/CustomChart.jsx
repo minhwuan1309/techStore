@@ -36,13 +36,13 @@ const CustomChart = ({ data, isMonth, customTime }) => {
         ticks: { display: true },
         grid: { color: "rgba(0,0,0,0.1)", drawTicks: false },
         min:
-          Math.min(...chartData?.map((el) => Math.round(+el.sum * 23500))) - 5 <
+          Math.min(...chartData?.map((el) => Math.round(+el.sum))) - 5 <
           0
             ? 0
-            : Math.min(...chartData?.map((el) => Math.round(+el.sum * 23500))) -
+            : Math.min(...chartData?.map((el) => Math.round(+el.sum))) -
               5,
         max:
-          Math.max(...chartData?.map((el) => Math.round(+el.sum * 23500))) + 5,
+          Math.max(...chartData?.map((el) => Math.round(+el.sum))) + 5,
         border: { dash: [20, 0] },
       },
       x: {
@@ -67,7 +67,7 @@ const CustomChart = ({ data, isMonth, customTime }) => {
             labels: chartData?.map((el) => el.date),
             datasets: [
               {
-                data: chartData?.map((el) => Math.round(+el.sum * 23500)),
+                data: chartData?.map((el) => Math.round(+el.sum)),
                 borderColor: "#e35050",
                 tension: 0.2,
                 borderWidth: 2,

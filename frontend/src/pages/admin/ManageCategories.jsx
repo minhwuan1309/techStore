@@ -23,8 +23,8 @@ const ManageCategory = () => {
   const [sortOrder, setSortOrder] = useState("asc")
 
   const render = useCallback(() => {
-    setUpdate(!update)
-  }, [update])
+    refreshCategories()
+  }, [])
 
   const [searchTerm, setSearchTerm] = useState("")
   const queryDebounce = useDebounce(searchTerm, 800)
@@ -110,6 +110,9 @@ const ManageCategory = () => {
       toast.error("Đã xảy ra lỗi khi tải lại danh sách danh mục.")
     }
   }
+  useEffect(() => {
+    refreshCategories()
+  }, [params, queryDebounce, isShowModal])
 
   return (
       <div className={clsx("w-full bg-white/30 backdrop-blur-xl rounded-2xl p-6 shadow-2xl", editCategory && "pl-16")}>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import {
   Sidebar,
   Banner,
@@ -21,6 +21,8 @@ const Home = ({ navigate }) => {
   const { newProducts } = useSelector((state) => state.products)
   const { categories } = useSelector((state) => state.app)
 
+  const [showVietnamMap, setShowVietnamMap] = useState(true)
+
   useEffect(() => {
     const handleScroll = () => {
       const mapElement = document.getElementById("vietnam-map");
@@ -31,7 +33,13 @@ const Home = ({ navigate }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [])
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowVietnamMap(false);
+    }, 5000);
 
+    return () => clearTimeout(timer);
+  }, [])
   return (
     <div className="w-full bg-gray-50 relative flex flex-col items-center pt-4">
       {/* Hero Section */}
@@ -41,7 +49,11 @@ const Home = ({ navigate }) => {
         </div>
       </div>
       
-      <VietnamMap/>
+      {showVietnamMap && (
+        <div className="w-full sm:w-[90%] md:w-[65%] mt-4">
+          <VietnamMap />
+        </div>
+      )}
 
 
       {/* Main Content */}
@@ -147,8 +159,6 @@ const Home = ({ navigate }) => {
                           <h4 className="text-white font-bold uppercase p-4">{el.title}</h4>
                         </div>
                       </div>
-                      {console.log(el.title)}
-
                       <div className="p-4">
                         <ul className="space-y-2">
                           {el?.brand?.map((item) => (
