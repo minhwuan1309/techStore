@@ -151,8 +151,8 @@ const Home = ({ navigate }) => {
               ?.slice(0, 9)
               ?.map((el) => (
                 <div key={el._id} className="col-span-1">
-                  <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                    <div className="relative h-[160px] sm:h-[190px] overflow-hidden">
+                  <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group h-[360px]">
+                    <div className="relative h-[180px] overflow-hidden">
                       <img
                         src={el?.image}
                         alt=""
@@ -162,12 +162,12 @@ const Home = ({ navigate }) => {
                         <h4 className="text-white font-bold uppercase p-4">{el.title}</h4>
                       </div>
                     </div>
-                    <div className="p-4">
-                      <ul className="space-y-2">
+                    <div className="p-4 overflow-y-auto">
+                      <div className="grid grid-cols-2 gap-0">
                         {el?.brand?.map((item) => (
                           <li 
                             key={item._id}
-                            className="flex cursor-pointer hover:text-indigo-600 transition-colors duration-300 gap-2 items-center text-gray-700"
+                            className="flex flex-row cursor-pointer hover:text-indigo-600 transition-colors duration-300 gap-2 items-center text-gray-700 list-none h-8"
                             onClick={() =>
                               navigate({
                                 pathname: `/${el.slug}`,
@@ -177,11 +177,11 @@ const Home = ({ navigate }) => {
                               })
                             }
                           >
-                            <IoIosArrowForward size={14} className="text-indigo-600" />
-                            <span className="hover:translate-x-1 transition-transform duration-300">{item.title}</span>
+                            <IoIosArrowForward size={14} className="text-indigo-600 flex-shrink-0" />
+                            <span className="hover:translate-x-1 transition-transform duration-300 text-sm truncate">{item.title}</span>
                           </li>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -195,8 +195,8 @@ const Home = ({ navigate }) => {
               ?.slice(0, 6)
               ?.map((el) => (
                 <div key={el._id} className="col-span-1">
-                  <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div className="flex flex-row">
+                  <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-[160px]">
+                    <div className="flex flex-row h-full">
                       <div className="w-1/3 relative overflow-hidden">
                         <img
                           src={el?.image}
@@ -204,13 +204,13 @@ const Home = ({ navigate }) => {
                           className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
                         />
                       </div>
-                      <div className="w-2/3 p-3">
+                      <div className="w-2/3 p-3 overflow-hidden">
                         <h4 className="font-semibold uppercase text-base mb-2 text-indigo-700">{el.title}</h4>
-                        <ul className="space-y-1">
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1 overflow-y-auto h-[110px]">
                           {el?.brand?.map((item) => (
                             <li
                               key={item._id}
-                              className="flex cursor-pointer hover:text-indigo-600 transition-colors duration-300 gap-1 items-center text-gray-700 text-sm"
+                              className="flex cursor-pointer hover:text-indigo-600 transition-colors duration-300 gap-1 items-center text-gray-700 text-sm list-none h-6"
                               onClick={() =>
                                 navigate({
                                   pathname: `/${el.slug}`,
@@ -220,11 +220,11 @@ const Home = ({ navigate }) => {
                                 })
                               }
                             >
-                              <IoIosArrowForward size={12} className="text-indigo-600" />
-                              <span className="hover:translate-x-1 transition-transform duration-300">{item.title}</span>
+                              <IoIosArrowForward size={12} className="text-indigo-600 flex-shrink-0" />
+                              <span className="hover:translate-x-1 transition-transform duration-300 truncate">{item.title}</span>
                             </li>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
