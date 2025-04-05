@@ -73,9 +73,9 @@ const BlogsPage = () => {
 
   return (
     <div className="w-full bg-gray-50">
-      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-8">
+      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-6 md:py-8">
         <div className="md:w-main w-screen px-4 md:px-0 m-auto">
-          <h3 className="font-bold uppercase text-2xl text-white">Bài viết</h3>
+          <h3 className="font-bold uppercase text-xl md:text-2xl text-white">Bài viết</h3>
           <div className="mt-2 text-white">
             <Breadcrumb category="blogs" />
           </div>
@@ -83,42 +83,42 @@ const BlogsPage = () => {
       </div>
 
       <div className="md:w-main m-auto px-4 md:px-0">
-        <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-lg shadow-md">
-          <div className="flex items-center gap-2">
-            <label htmlFor="sort" className="font-medium text-gray-700">
+        <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-3 md:p-4 rounded-lg shadow-md">
+          <div className="flex items-center gap-2 mb-3 md:mb-0">
+            <label htmlFor="sort" className="font-medium text-gray-700 text-sm md:text-base">
               Sắp xếp:
             </label>
-            <div className="w-[200px]">
+            <div className="w-[150px] md:w-[200px]">
               <InputSelect
                 value={sort}
                 options={sorts}
                 changeValue={changeValue}
                 wrapperStyles="w-full"
-                inputStyles="py-2 rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                inputStyles="py-2 rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm md:text-base"
               />
             </div>
           </div>
         </div>
 
-        <div className="my-8">
+        <div className="my-6 md:my-8">
           {loading ? (
             <div className="flex justify-center items-center h-40">
-              <p className="text-center text-lg text-gray-500">
+              <p className="text-center text-base md:text-lg text-gray-500">
                 Đang tải dữ liệu...
               </p>
             </div>
           ) : error ? (
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <p className="text-center text-red-500 text-lg">{error}</p>
+            <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 text-center">
+              <p className="text-center text-red-500 text-base md:text-lg">{error}</p>
             </div>
           ) : blogs && blogs.blogs.length > 0 ? (
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {blogs.blogs.map((blog) => (
                 <div
                   key={blog._id}
                   className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
                 >
-                  <div className="relative h-[200px] overflow-hidden">
+                  <div className="relative h-[180px] md:h-[200px] overflow-hidden">
                     <img
                       src={blog.image || "https://via.placeholder.com/300"}
                       alt={blog.title}
@@ -126,15 +126,15 @@ const BlogsPage = () => {
                       className="w-full h-full object-cover cursor-pointer transform hover:scale-110 transition-transform duration-500"
                     />
                   </div>
-                  <div className="p-4">
+                  <div className="p-3 md:p-4">
                     <h4
-                      className="font-semibold text-lg cursor-pointer text-indigo-600 hover:text-indigo-800 transition-colors duration-300"
+                      className="font-semibold text-base md:text-lg cursor-pointer text-indigo-600 hover:text-indigo-800 transition-colors duration-300 line-clamp-2"
                       onClick={() => navigate(`/blogs/${blog._id}/${blog.title}`)}
                     >
                       {blog.title}
                     </h4>
                     <div
-                      className="text-sm text-gray-600 mt-2 leading-relaxed h-16 overflow-hidden"
+                      className="text-xs md:text-sm text-gray-600 mt-2 leading-relaxed h-12 md:h-16 overflow-hidden"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(
                           blog.description?.length > 100
@@ -143,11 +143,11 @@ const BlogsPage = () => {
                         ),
                       }}
                     />
-                    <div className="mt-2 text-sm text-gray-500">
+                    <div className="mt-2 text-xs md:text-sm text-gray-500">
                       {new Date(blog.createdAt).toLocaleDateString('vi-VN')}
                     </div>
                     <button
-                      className="mt-4 w-full text-white font-medium bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-2 rounded-md hover:opacity-90 transition-all duration-300 flex items-center justify-center"
+                      className="mt-3 md:mt-4 w-full text-white font-medium bg-gradient-to-r from-indigo-500 to-purple-500 px-3 md:px-4 py-2 rounded-md hover:opacity-90 transition-all duration-300 flex items-center justify-center text-sm md:text-base"
                       onClick={() => navigate(`/blogs/${blog._id}/${blog.title}`)}
                     >
                       Xem bài viết
@@ -157,15 +157,15 @@ const BlogsPage = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <p className="text-center text-lg text-gray-500">
+            <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 text-center">
+              <p className="text-center text-base md:text-lg text-gray-500">
                 Không có bài viết nào.
               </p>
             </div>
           )}
         </div>
         
-        <div className="my-8 flex justify-end">
+        <div className="my-6 md:my-8 flex justify-center md:justify-end">
           <Pagination
             totalCount={blogs?.counts}
             pageSize={blogs?.blogs?.length || 0}

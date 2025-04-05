@@ -141,12 +141,12 @@ const DetailCart = ({ location, navigate }) => {
   
 
   return (
-    <div className="w-full bg-gray-50 min-h-screen p-6">
+    <div className="w-full bg-gray-50 min-h-screen p-4 md:p-6">
       <div className="container mx-auto">
-        <header className="text-3xl font-semibold py-4 mb-6 flex items-center border-b-2 border-indigo-600">
+        <header className="text-xl md:text-3xl font-semibold py-3 md:py-4 mb-4 md:mb-6 flex items-center border-b-2 border-indigo-600">
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
-            className="h-10 w-10 mr-4 text-indigo-600" 
+            className="h-8 w-8 md:h-10 md:w-10 mr-3 md:mr-4 text-indigo-600" 
             fill="none" 
             viewBox="0 0 24 24" 
             stroke="currentColor"
@@ -162,10 +162,10 @@ const DetailCart = ({ location, navigate }) => {
         </header>
 
         {currentCart?.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg shadow-md">
+          <div className="text-center py-8 md:py-12 bg-white rounded-lg shadow-md">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              className="h-24 w-24 mx-auto mb-4 text-gray-400" 
+              className="h-16 w-16 md:h-24 md:w-24 mx-auto mb-3 md:mb-4 text-gray-400" 
               fill="none" 
               viewBox="0 0 24 24" 
               stroke="currentColor"
@@ -177,17 +177,17 @@ const DetailCart = ({ location, navigate }) => {
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" 
               />
             </svg>
-            <p className="text-xl text-gray-600">Giỏ hàng của bạn đang trống</p>
+            <p className="text-lg md:text-xl text-gray-600">Giỏ hàng của bạn đang trống</p>
             <Link 
               to="/" 
-              className="mt-4 inline-block px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+              className="mt-3 md:mt-4 inline-block px-4 md:px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition text-sm md:text-base"
             >
               Tiếp tục mua sắm
             </Link>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="grid grid-cols-11 gap-4 bg-gray-100 py-3 rounded-t-lg font-bold text-center">
+          <div className="bg-white rounded-lg shadow-lg p-4 md:p-6">
+            <div className="hidden md:grid grid-cols-11 gap-4 bg-gray-100 py-3 rounded-t-lg font-bold text-center">
               <div className="col-span-1"></div>
               <div className="col-span-5">Sản phẩm</div>
               <div className="col-span-2">Số lượng</div>
@@ -198,58 +198,63 @@ const DetailCart = ({ location, navigate }) => {
             {currentCart?.map((el) => (
               <div 
                 key={el._id} 
-                className="grid grid-cols-11 gap-4 items-center py-4 border-b hover:bg-gray-50 transition"
+                className="grid grid-cols-1 md:grid-cols-11 gap-4 items-center py-4 border-b hover:bg-gray-50 transition"
               >
-                <div className="col-span-1 flex justify-center">
+                <div className="col-span-1 flex justify-center md:justify-start">
                   <input
                     type="checkbox"
-                    className="form-checkbox w-5 h-5 text-indigo-600 rounded"
+                    className="form-checkbox w-4 h-4 md:w-5 md:h-5 text-indigo-600 rounded"
                     checked={!!selectedProducts.find((p) => p._id === el._id)}
                     onChange={() => toggleProductSelection(el)}
                   />
                 </div>
-                <div className="col-span-5 flex items-center">
+                <div className="col-span-1 md:col-span-5 flex items-center">
                   <img
                     src={el.thumbnail}
                     alt={el.title}
-                    className="w-20 h-20 object-cover rounded-md mr-4"
+                    className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-md mr-3 md:mr-4"
                   />
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800">{el.title}</h3>
-                    <p className="text-gray-500">{el.color}</p>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-800">{el.title}</h3>
+                    <p className="text-sm text-gray-500">{el.color}</p>
                   </div>
                 </div>
-                <div className="col-span-2 flex justify-center items-center">
-                  <div className="flex items-center space-x-3">
+                <div className="col-span-1 md:col-span-2 flex justify-center items-center">
+                  <div className="flex items-center space-x-2 md:space-x-3">
                     <button 
-                      className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-indigo-200"
+                      className="w-6 h-6 md:w-8 md:h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-indigo-200 text-sm md:text-base"
                       onClick={() => handleDecreaseQuantity(el.product?._id, el.color, el.quantity)}
                     >
                       -
                     </button>
-                    <span className="text-lg font-medium">{el.quantity}</span>
+                    <span className="text-base md:text-lg font-medium">{el.quantity}</span>
                     <button 
-                      className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-indigo-200"
+                      className="w-6 h-6 md:w-8 md:h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-indigo-200 text-sm md:text-base"
                       onClick={() => handleIncreaseQuantity(el.product?._id, el.color, el.quantity)}
                     >
                       +
                     </button>
                   </div>
                 </div>
-                <div className="col-span-2 flex justify-center items-center">
-                  <span className="text-lg font-bold text-indigo-600">
+                <div className="col-span-1 md:col-span-2 flex justify-center items-center">
+                  <span className="text-base md:text-lg font-bold text-indigo-600">
                     {formatMoney(el.price)} VNĐ
                   </span>
-                  {el.note && <span className="text-red-500 text-sm ml-2">({el.note})</span>}
+                  {el.note && <span className="text-red-500 text-xs md:text-sm ml-2">({el.note})</span>}
                 </div>
                 <div className="col-span-1 flex justify-center items-center">
-                  <button className="text-red-500 text-sm ml-2" onClick={() => removeCart(el.product?._id, el.color)}>Xóa</button>
+                  <button 
+                    className="text-red-500 text-xs md:text-sm hover:text-red-600 transition-colors" 
+                    onClick={() => removeCart(el.product?._id, el.color)}
+                  >
+                    Xóa
+                  </button>
                 </div>
               </div>
             ))}
 
-            <div className="mt-6 flex justify-between items-center">
-              <div className="text-xl font-bold text-gray-700">
+            <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+              <div className="text-lg md:text-xl font-bold text-gray-700 text-center md:text-left">
                 Tổng tiền: 
                 <span className="ml-2 text-indigo-600">
                   {`${formatMoney(
@@ -262,7 +267,7 @@ const DetailCart = ({ location, navigate }) => {
               </div>
               <Button 
                 handleOnClick={handleSubmit}
-                className="px-8 py-3 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white rounded-lg hover:opacity-90 transition"
+                className="w-full md:w-auto px-6 md:px-8 py-2 md:py-3 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white rounded-lg hover:opacity-90 transition text-sm md:text-base"
               >
                 Thanh Toán
               </Button>

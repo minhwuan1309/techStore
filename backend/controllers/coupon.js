@@ -86,42 +86,36 @@ const deleteCoupon = asyncHandler(async (req, res) => {
 })
 
 const checkCoupon = asyncHandler(async (req, res) => {
-  try {
-    const { coupon } = req.body
-    
-    if (!coupon) {
-      return res.status(400).json({
-        success: false,
-        message: "Vui lòng nhập mã giảm giá"
-      })
-    }
-    
-    const foundCoupon = await Coupon.findOne({ name: coupon.toUpperCase() })
-    
-    if (!foundCoupon) {
-      return res.status(400).json({
-        success: false,
-        message: "Mã giảm giá không hợp lệ"
-      })
-    }
-    
-    if (new Date(foundCoupon.expiry) < new Date()) {
-      return res.status(400).json({
-        success: false,
-        message: "Mã giảm giá đã hết hạn"
-      })
-    }
-    
-    return res.status(200).json({
-      success: true,
-      discount: foundCoupon.discount,
-      message: "Mã giảm giá hợp lệ"
-    })
-  } catch (error) {
-    console.error(error.message)
-    res.status(500).json({ success: false, mes: error.message })
+  const { coupon, couponCode } = req.body;
+  const code = coupon || couponCode;
+
+  if (!code) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Vui lòng nhập mã giảm giá" });
   }
-})
+
+  const foundCoupon = await Coupon.findOne({ name: code.toUpperCase() });
+
+  if (!foundCoupon) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Mã giảm giá không hợp lệ" });
+  }
+
+  if (new Date(foundCoupon.expiry) < new Date()) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Mã giảm giá đã hết hạn" });
+  }
+
+  return res.status(200).json({
+    success: true,
+    discount: foundCoupon.discount,
+    message: "Mã giảm giá hợp lệ",
+  });
+});
+
 
 module.exports = {
   createNewCoupon,

@@ -21,7 +21,7 @@ const Checkout = ({ dispatch, navigate }) => {
   const [discount, setDiscount] = useState(0)
   dispatch = useDispatch()
   const selectedProducts = JSON.parse(localStorage.getItem("selectedProducts")) || []
-  
+
   const total = selectedProducts?.reduce(
     (sum, el) => sum + el.price * el.quantity,
     0
@@ -32,30 +32,7 @@ const Checkout = ({ dispatch, navigate }) => {
     if (isSuccess) dispatch(getCurrent())
   }, [isSuccess])
 
-  useEffect(() => {
-    if (paymentMethod === "COD") {
-      const total = Math.round(
-        +selectedProducts?.reduce((sum, el) => +el?.price * el.quantity + sum, 0)
-      )
-      Swal.fire({
-        icon: "info",
-        title: "Thanh toán",
-        text: `Vui lòng trả bằng tiền mặt số tiền ${formatMoney(
-          total
-        )} VNĐ khi nhận hàng.`,
-        showConfirmButton: true,
-        confirmButtonText: "Thanh toán",
-        showCancelButton: true,
-        cancelButtonText: "Quay lại",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          handleSaveOrder()
-        } else {
-          setPaymentMethod("")
-        }
-      })
-    }
-  }, [paymentMethod])
+
 
   const handleSaveOrder = async () => {
     if (!current?._id) {
@@ -65,12 +42,14 @@ const Checkout = ({ dispatch, navigate }) => {
   
     const payload = {
       products: selectedProducts.map((el) => ({
-        product: el._id,
+        cartItemId: el._id,
+        product: el.product,
         quantity: el.quantity,
         price: el.price,
         title: el.title,
         thumbnail: el.thumbnail || "",
       })),
+      
       total: Math.round(
         selectedProducts.reduce((sum, el) => el.price * el.quantity + sum, 0)
       ),
@@ -92,7 +71,7 @@ const Checkout = ({ dispatch, navigate }) => {
             continue
           }
         
-          await apiRemoveCart(product._id, product.color)
+          await apiRemoveCart(product.product, product.color)
         
           const cartItem = current?.cart?.find(
             (item) =>
@@ -122,7 +101,7 @@ const Checkout = ({ dispatch, navigate }) => {
 
 
   const handleApplyCoupon = async () => {
-    const response = await apiCheckCoupon({ coupon: couponCode })
+    const response = await apiCheckCoupon(couponCode)
 
     if (response.success) {
       const discountAmount = (response.discount / 100) * total // Tính giảm giá
@@ -137,6 +116,30 @@ const Checkout = ({ dispatch, navigate }) => {
       Swal.fire("Thất bại!", response.message, "error")
     }
   }
+  useEffect(() => {
+    if (paymentMethod === "COD") {
+      const total = Math.round(
+        +selectedProducts?.reduce((sum, el) => +el?.price * el.quantity + sum, 0)
+      )
+      Swal.fire({
+        icon: "info",
+        title: "Thanh toán",
+        text: `Vui lòng trả bằng tiền mặt số tiền ${formatMoney(
+          finalTotal
+        )} VNĐ khi nhận hàng.`,
+        showConfirmButton: true,
+        confirmButtonText: "Thanh toán",
+        showCancelButton: true,
+        cancelButtonText: "Quay lại",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          handleSaveOrder()
+        } else {
+          setPaymentMethod("")
+        }
+      })
+    }
+  }, [paymentMethod])
 
   return (
     <div className="w-full bg-gray-50 min-h-screen p-6">

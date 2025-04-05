@@ -1,3 +1,4 @@
+const mongoose = require("mongoose") 
 const asyncHandler = require("express-async-handler")
 const Order = require("../models/order")
 const User = require("../models/user")
@@ -45,9 +46,37 @@ const createOrder = asyncHandler(async (req, res) => {
   if (status) orderData.status = status
 
   try {
+    // Check if all products have sufficient quantity
+    for (const product of products) {
+      if (!product.product || !mongoose.Types.ObjectId.isValid(product.product)) {
+        return res.status(400).json({
+          success: false,
+          message: `ID sản phẩm không hợp lệ: ${product.title}`,
+        })
+      }
+    
+      const productDoc = await Product.findById(product.product)
+      if (!productDoc) {
+        return res.status(400).json({
+          success: false,
+          message: `Sản phẩm ${product.title} không tồn tại!`,
+        })
+      }
+    }
+    
+
     const newOrder = await Order.create(orderData)  
     
     if (newOrder) {
+      // Update product quantities
+      for (const product of products) {
+        await Product.findByIdAndUpdate(
+          product.product,
+          { $inc: { quantity: -product.quantity, sold: product.quantity } },
+          { new: true }
+        )
+      }
+
       const user = await User.findById(userId)
       if (user && user.email) {
         await sendOrderConfirmationEmail(user.email, newOrder)

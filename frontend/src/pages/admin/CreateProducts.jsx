@@ -55,10 +55,7 @@ const CreateProducts = () => {
   const handleCreateProduct = async (data) => {
     const invalids = validate(payload, setInvalidFields);
     if (invalids === 0) {
-      if (data.category)
-        data.category = categories?.find(
-          (el) => el._id === data.category
-        )?.title;
+
       const finalPayload = { ...data, ...payload };
       const formData = new FormData();
       for (let i of Object.entries(finalPayload)) formData.append(i[0], i[1]);

@@ -21,19 +21,19 @@ const ProductCard = ({
           <img
             src={image || "https://apollobattery.com.au/wp-content/uploads/2022/08/default-product-image.png"}
             alt={title || "Product image"}
-            className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+            className="w-full h-full object-contain p-2 sm:p-3 group-hover:scale-105 transition-transform duration-300 cursor-pointer"
           />
         </div>
-        <div className="flex flex-col p-4 justify-center gap-2 w-full">
-          <span className="line-clamp-1 capitalize text-gray-800 font-medium cursor-pointer group-hover:text-indigo-600 transition-colors duration-300">
+        <div className="flex flex-col p-3 sm:p-4 justify-center gap-1 sm:gap-2 w-full">
+          <span className="line-clamp-2 sm:line-clamp-1 capitalize text-gray-800 text-sm sm:text-base font-medium cursor-pointer group-hover:text-indigo-600 transition-colors duration-300">
             {title?.toLowerCase()}
           </span>
-          <div className="flex h-4 mb-1 cursor-pointer">
-            {renderStarFromNumber(totalRatings, 14)?.map((el, index) => (
+          <div className="flex h-3 sm:h-4 mb-0 sm:mb-1 cursor-pointer">
+            {renderStarFromNumber(totalRatings, 12, 14)?.map((el, index) => (
               <span key={index} className="text-amber-400">{el}</span>
             ))}
           </div>
-          <span className="font-semibold text-indigo-600">{`${formatMoney(price)} VNĐ`}</span>
+          <span className="font-semibold text-indigo-600 text-sm sm:text-base">{`${formatMoney(price)} VNĐ`}</span>
         </div>
       </div>
     </div>

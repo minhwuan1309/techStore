@@ -44,26 +44,26 @@ const Personal = ({ navigate }) => {
 
     return (
       <div className="w-full relative px-4">
-        <header className="text-3xl font-semibold py-4 border-b-2 border-indigo-600 mb-8 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-3 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <header className="text-xl md:text-3xl font-semibold py-3 md:py-4 border-b-2 border-indigo-600 mb-6 md:mb-8 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8 mr-2 md:mr-3 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
           Thông tin cá nhân
         </header>
         <form
           onSubmit={handleSubmit(handleUpdateInfor)}
-          className="w-3/5 mx-auto py-8 flex flex-col gap-6 bg-white rounded-lg shadow-lg p-8"
+          className="w-full md:w-3/5 mx-auto py-6 md:py-8 flex flex-col gap-4 md:gap-6 bg-white rounded-lg shadow-lg p-4 md:p-8"
         >
           <div className="flex justify-center mb-4">
             <label htmlFor="file" className="cursor-pointer">
               <img
                 src={current?.avatar || avatar}
                 alt="avatar"
-                className="w-32 h-32 object-cover rounded-full border-4 border-indigo-500 hover:scale-105 transition-transform duration-300"
+                className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-full border-4 border-indigo-500 hover:scale-105 transition-transform duration-300"
               />
             </label>
           </div>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <InputForm
               label="Họ"
               id="firstname"
@@ -108,9 +108,9 @@ const Personal = ({ navigate }) => {
           />
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 flex items-center justify-center"
+            className="w-full bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white py-2 md:py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 flex items-center justify-center text-sm md:text-base"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             Cập nhật thông tin

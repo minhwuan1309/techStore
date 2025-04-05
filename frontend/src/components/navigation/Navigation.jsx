@@ -4,7 +4,7 @@ import { NavLink, createSearchParams, useNavigate, useLocation } from "react-rou
 import InputForm from "components/inputs/InputForm"
 import { useForm } from "react-hook-form"
 import path from "utils/path"
-import { IoMenuSharp } from "react-icons/io5"
+import { IoMenuSharp, IoClose } from "react-icons/io5"
 
 const Navigation = () => {
   const {
@@ -34,17 +34,38 @@ const Navigation = () => {
     }
   }, [isDirty, q])
 
+  // Prevent body scrolling when mobile menu is open
+  useEffect(() => {
+    if (showMenu) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [showMenu]);
+
   return (
     <div className=" md:w-main w-full h-[48px] flex items-center px-4 md:px-0 justify-between border-y bg-white shadow-sm">
       {showMenu && (
         <div
           onClick={() => setShowMenu(false)}
-          className="absolute inset-0 z-[999] bg-black bg-opacity-50 flex justify-start"
+          className="fixed inset-0 z-[999] bg-black bg-opacity-50 flex justify-start"
         >
           <div
             onClick={(e) => e.stopPropagation()}
             className="w-4/5 bg-white p-4 h-full flex flex-col shadow-md transform transition-transform duration-300 ease-in-out"
           >
+            <div className="flex justify-between items-center mb-4 pb-2 border-b">
+              <h3 className="font-semibold text-lg text-gray-800">Menu</h3>
+              <button 
+                onClick={() => setShowMenu(false)}
+                className="p-1 rounded-full hover:bg-gray-100"
+              >
+                <IoClose size={24} className="text-gray-600" />
+              </button>
+            </div>
             {navigation.map((el) => (
               <NavLink
                 to={el.path}
