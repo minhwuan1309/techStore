@@ -46,10 +46,9 @@ const Products = () => {
   }
 
   useEffect(() => {
-    const page = params.get('page') || 1
-    fetchProductsByCategory({ page })
+    fetchProductsByCategory({})
     window.scrollTo(0, 0)
-  }, [params, category])
+  }, [category])
 
   useEffect(() => {
     const qParam = params.get("q");
@@ -148,25 +147,16 @@ const Products = () => {
     }
   }
 
-  const handlePageChange = (pageNumber) => {
-    navigate({
-      pathname: `/${category || "products"}`,
-      search: createSearchParams({ page: pageNumber }).toString()
-    })
-  }
-
   return (
-    <div className="w-full bg-gray-50 pb-12">
-      {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white py-12">
-        <div className="lg:w-main w-full px-4 m-auto">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            {categoryTitle}
-          </h1>
-          <Breadcrumb category={categoryTitle} />
+    <div className="w-full bg-gray-50">
+      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-8">
+        <div className="md:w-main w-screen px-4 md:px-0 m-auto">
+          <h3 className="font-bold uppercase text-2xl text-white">Sản phẩm</h3>
+          <div className="mt-2 text-white">
+            <Breadcrumb category="products" />
+          </div>
         </div>
       </div>
-
 
       {/* Filters & Controls */}
       <div className="lg:w-main w-full px-4 m-auto mt-8">
@@ -409,7 +399,6 @@ const Products = () => {
                 pageSize={products?.products?.length || 0}
                 siblingCount={1}
                 currentPage={products?.currentPage}
-                onPageChange={handlePageChange}
                 className="flex items-center gap-2"
               />
             </div>

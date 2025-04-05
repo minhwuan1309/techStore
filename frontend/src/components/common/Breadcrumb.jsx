@@ -2,32 +2,47 @@ import React, { memo } from "react"
 import useBreadcrumbs from "use-react-router-breadcrumbs"
 import { Link } from "react-router-dom"
 import { IoIosArrowForward } from "react-icons/io"
-import { slugToTitleMap } from "utils/helpers"
+
+const routes = [
+  { path: "/", breadcrumb: "Trang chủ" },
+  { 
+    path: "/blogs",
+    breadcrumb: "Bài viết"
+  },
+  {
+    path: "/products",
+    breadcrumb: "Sản phẩm"
+  },
+  {
+    path: "/:category",
+    breadcrumb: ({ match }) => {
+      const category = decodeURIComponent(match.params.category)
+      switch(category) {
+        case 'blogs':
+          return 'Bài viết'
+        case 'products':
+          return 'Sản phẩm'
+        default:
+          return category
+      }
+    }
+  },
+  {
+    path: "/blogs/:id/:title",
+    breadcrumb: ({ match }) => decodeURIComponent(match.params.title)
+  },
+  {
+    path: "/products/:pid/:title",
+    breadcrumb: ({ match }) => decodeURIComponent(match.params.title)
+  }
+]
 
 const Breadcrumb = ({ title, category }) => {
-  const routes = [
-    {
-      path: "/:category",
-      breadcrumb: ({ match }) => {
-        const slug = match.params.category
-        const decodedCategory = decodeURIComponent(slug)
-        if (decodedCategory === "products") return "Sản phẩm"
-        if (decodedCategory === "blogs") return "Bài viết"
-        return slugToTitleMap[slug] || decodedCategory
-      },
-    },
-    { path: "/", breadcrumb: "Trang chính" },
-    {
-      path: "/:category/:pid/:title",
-      breadcrumb: ({ match }) => {
-        return decodeURIComponent(match.params.title)
-      },
-    },
-  ]
-  const breadcrumb = useBreadcrumbs(routes)
+  const breadcrumbs = useBreadcrumbs(routes)
+
   return (
     <div className="text-m flex items-center gap-2 py-2">
-      {breadcrumb?.map(({ match, breadcrumb }, index, self) => (
+      {breadcrumbs?.map(({ match, breadcrumb }, index, self) => (
         <Link
           className="flex gap-1 items-center hover:text-main"
           key={match.pathname}

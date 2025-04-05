@@ -1,32 +1,33 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import {
-  useParams,
   createSearchParams,
   useNavigate,
   useSearchParams,
 } from "react-router-dom"
 import { apiGetBlogs } from "../../apis/blog"
 import DOMPurify from "dompurify"
-import { Breadcrumb, Pagination } from "components"
+import { Breadcrumb, Pagination, InputSelect } from "../../components"
+
+const sorts = [
+  { value: "createdAt", text: "Mới nhất" },
+  { value: "-createdAt", text: "Cũ nhất" },
+]
 
 const BlogsPage = () => {
   const navigate = useNavigate()
-  const [products, setProducts] = useState(null)
-  const [blogs, setBlogs] = useState(null) // Trạng thái lưu danh sách blogs
-  const [params] = useSearchParams() // Lấy tham số tìm kiếm từ URL
-  const [sort, setSort] = useState("") // Trạng thái sắp xếp
-  const [loading, setLoading] = useState(false) // Trạng thái tải
-  const [error, setError] = useState("") // Trạng thái lỗi
-  const { category } = useParams()
+  const [blogs, setBlogs] = useState(null)
+  const [params] = useSearchParams()
+  const [sort, setSort] = useState("createdAt")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
-  // Hàm gọi API để lấy danh sách blogs
   const fetchBlogs = async (queries) => {
     setLoading(true)
     setError("")
     try {
       const response = await apiGetBlogs(queries)
       if (response.success) {
-        setBlogs(response) // Gán dữ liệu blog từ API
+        setBlogs(response)
       } else {
         setError("Không thể tải dữ liệu blogs.")
       }
@@ -41,26 +42,42 @@ const BlogsPage = () => {
   useEffect(() => {
     const queries = Object.fromEntries([...params])
     const q = { ...queries, sort }
-    fetchBlogs(q) // Gọi API với sort
+    fetchBlogs(q)
     window.scrollTo(0, 0)
   }, [params, sort])
-  useEffect(() => {
-    if (sort) {
+
+  const changeValue = useCallback(
+    (value) => {
+      setSort(value)
+      const currentParams = Object.fromEntries([...params])
+      const newParams = { ...currentParams, sort: value }
+      
       navigate({
-        pathname: `/${category}`,
-        search: createSearchParams({ sort }).toString(),
+        pathname: "/blogs",
+        search: createSearchParams(newParams).toString()
       })
-    }
-  }, [sort, category, navigate])
+    },
+    [params, navigate]
+  )
+
+  const handlePageChange = (pageNumber) => {
+    const currentParams = Object.fromEntries([...params])
+    navigate({
+      pathname: "/blogs",
+      search: createSearchParams({ 
+        ...currentParams,
+        page: pageNumber 
+      }).toString()
+    })
+  }
 
   return (
     <div className="w-full bg-gray-50">
-      {/* Bộ lọc và sắp xếp */}
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-8">
         <div className="md:w-main w-screen px-4 md:px-0 m-auto">
-          <h3 className="font-bold uppercase text-2xl text-white">{category || "Bài viết"}</h3>
+          <h3 className="font-bold uppercase text-2xl text-white">Bài viết</h3>
           <div className="mt-2 text-white">
-            <Breadcrumb category={category || "Bài viết"} />
+            <Breadcrumb category="blogs" />
           </div>
         </div>
       </div>
@@ -71,19 +88,18 @@ const BlogsPage = () => {
             <label htmlFor="sort" className="font-medium text-gray-700">
               Sắp xếp:
             </label>
-            <select
-              id="sort"
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="createdAt:desc">Mới nhất</option>
-              <option value="createdAt:asc">Cũ nhất</option>
-            </select>
+            <div className="w-[200px]">
+              <InputSelect
+                value={sort}
+                options={sorts}
+                changeValue={changeValue}
+                wrapperStyles="w-full"
+                inputStyles="py-2 rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Nội dung chính */}
         <div className="my-8">
           {loading ? (
             <div className="flex justify-center items-center h-40">
@@ -106,22 +122,14 @@ const BlogsPage = () => {
                     <img
                       src={blog.image || "https://via.placeholder.com/300"}
                       alt={blog.title}
-                      onClick={() =>
-                        navigate(
-                          `/blogs/${blog._id}/${encodeURIComponent(blog.title)}`
-                        )
-                      }
+                      onClick={() => navigate(`/blogs/${blog._id}/${blog.title}`)}
                       className="w-full h-full object-cover cursor-pointer transform hover:scale-110 transition-transform duration-500"
                     />
                   </div>
                   <div className="p-4">
                     <h4
                       className="font-semibold text-lg cursor-pointer text-indigo-600 hover:text-indigo-800 transition-colors duration-300"
-                      onClick={() =>
-                        navigate(
-                          `/blogs/${blog._id}/${encodeURIComponent(blog.title)}`
-                        )
-                      }
+                      onClick={() => navigate(`/blogs/${blog._id}/${blog.title}`)}
                     >
                       {blog.title}
                     </h4>
@@ -135,13 +143,12 @@ const BlogsPage = () => {
                         ),
                       }}
                     />
+                    <div className="mt-2 text-sm text-gray-500">
+                      {new Date(blog.createdAt).toLocaleDateString('vi-VN')}
+                    </div>
                     <button
                       className="mt-4 w-full text-white font-medium bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-2 rounded-md hover:opacity-90 transition-all duration-300 flex items-center justify-center"
-                      onClick={() =>
-                        navigate(
-                          `/blogs/${blog._id}/${encodeURIComponent(blog.title)}`
-                        )
-                      }
+                      onClick={() => navigate(`/blogs/${blog._id}/${blog.title}`)}
                     >
                       Xem bài viết
                     </button>
@@ -159,7 +166,14 @@ const BlogsPage = () => {
         </div>
         
         <div className="my-8 flex justify-end">
-          <Pagination totalCount={blogs?.counts} />
+          <Pagination
+            totalCount={blogs?.counts}
+            pageSize={blogs?.blogs?.length || 0}
+            siblingCount={1}
+            currentPage={blogs?.currentPage}
+            onPageChange={handlePageChange}
+            className="flex items-center gap-2"
+          />
         </div>
       </div>
     </div>
