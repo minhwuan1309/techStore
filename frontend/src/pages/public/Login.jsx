@@ -133,7 +133,7 @@ const Login = () => {
   }
 
   return (
-    <div className="w-screen h-screen relative bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+    <div className="w-screen h-screen absolute top-0 left-0 right-0 flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
       {isVerifiedEmail && (
         <div className="absolute top-0 left-0 right-0 bottom-0 bg-overlay z-50 flex flex-col justify-center items-center">
           <div className="bg-white w-[90%] max-w-[500px] rounded-lg shadow-lg p-8">
@@ -158,125 +158,72 @@ const Login = () => {
         </div>
       )}
       
-      {isForgotPassword && (
-        <div className="absolute top-0 left-0 bottom-0 right-0 bg-overlay z-50 flex flex-col items-center justify-center px-4 py-8">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-[800px] w-full">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Quên mật khẩu</h2>
-            <div className="flex w-full flex-col gap-4">
-              <label htmlFor="email" className="text-gray-700 font-medium">Nhập email của bạn:</label>
+      {isForgotPassword && !isResetPassword && (
+          <div className="absolute inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center px-4">
+            <div className="bg-white rounded-2xl shadow-xl p-10 w-[90%] max-w-xl text-center">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Quên mật khẩu</h2>
+              <p className="text-gray-600 mb-4">Nhập địa chỉ email đã đăng ký để nhận mã xác thực</p>
               <input
                 type="text"
                 id="email"
-                className="w-full p-3 border rounded-md outline-none focus:border-indigo-500 transition-colors"
+                className="w-full p-3 border rounded-md outline-none focus:border-indigo-500 transition-colors mb-6"
                 placeholder="email@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <div className="flex items-center justify-end w-full gap-4 mt-4">
+              <div className="flex items-center justify-end w-full gap-4">
                 <Button
-                  name="Submit"
+                  name="Gửi mã"
                   handleOnClick={handleForgotPassword}
                   style="px-6 py-3 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 font-semibold transition-colors"
-                >
-                  Gửi mã
-                </Button>
+                />
                 <Button
-                  name="Back"
+                  name="Quay lại"
                   handleOnClick={() => setIsForgotPassword(false)}
                   style="px-6 py-3 rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 font-semibold transition-colors"
-                >
-                  Quay về
-                </Button>
+                />
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
       
       {isResetPassword && (
-        <div className="absolute top-0 left-0 bottom-0 right-0 bg-black bg-opacity-30 z-50 flex flex-col items-center justify-center">
-          <div className="bg-white bg-opacity-95 rounded-lg shadow-lg p-8 w-1/2 h-1/2 flex flex-col">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Đặt lại mật khẩu</h2>
-            
-            <div className="flex flex-col gap-4 flex-1">
-              <div className="w-full">
-                <label 
-                  htmlFor="resetToken" 
-                  className="block text-gray-700 font-medium mb-2"
+          <div className="absolute inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center px-4">
+            <div className="bg-white bg-opacity-95 rounded-2xl shadow-xl p-10 w-[90%] max-w-xl text-center">
+              <div className="flex flex-col items-center justify-center gap-6">
+                <svg
+                  className="w-16 h-16 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
                 >
-                  Mã xác nhận:
-                </label>
-                <input
-                  type="text"
-                  id="resetToken"
-                  className="w-full p-3 border rounded-md outline-none focus:border-indigo-500 transition-colors"
-                  placeholder="Nhập mã xác nhận từ email"
-                  value={resetToken}
-                  onChange={e => setResetToken(e.target.value)}
-                />
-              </div>
-              
-              <div className="w-full">
-                <label 
-                  htmlFor="newPassword" 
-                  className="block text-gray-700 font-medium mb-2"
-                >
-                  Mật khẩu mới:
-                </label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="newPassword"
-                  className="w-full p-3 border rounded-md outline-none focus:border-indigo-500 transition-colors"
-                  placeholder="Nhập mật khẩu mới"
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                />
-              </div>
-              
-              <div className="w-full">
-                <label 
-                  htmlFor="confirmNewPassword" 
-                  className="block text-gray-700 font-medium mb-2"
-                >
-                  Xác nhận mật khẩu:
-                </label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="confirmNewPassword"
-                  className="w-full p-3 border rounded-md outline-none focus:border-indigo-500 transition-colors"
-                  placeholder="Nhập lại mật khẩu mới"
-                  value={confirmNewPassword}
-                  onChange={e => setConfirmNewPassword(e.target.value)}
-                />
-              </div>
-              
-              <div className="flex items-center mt-2">
-                <input
-                  type="checkbox"
-                  id="showPassword"
-                  checked={showPassword}
-                  onChange={() => setShowPassword((prev) => !prev)}
-                  className="form-checkbox mr-2 w-5 h-5 text-indigo-600"
-                />
-                <label htmlFor="showPassword" className="text-gray-700">Hiển thị mật khẩu</label>
-              </div>
-              
-              <div className="flex items-center justify-end w-full mt-auto gap-4">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12l2 2l4 -4M12 22c5.523 0 10 -4.477 10 -10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10z"
+                  />
+                </svg>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Chúng tôi đã gửi email xác nhận thay đổi mật khẩu.
+                </h2>
+                <p className="text-gray-600 text-base">
+                  Vui lòng kiểm tra hộp thư đến hoặc thư rác (spam) của bạn.
+                </p>
                 <Button
-                  name="Quay lại"
-                  handleOnClick={() => setIsResetPassword(false)}
-                  style="px-6 py-3 rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 font-semibold transition-colors"
-                />
-                <Button
-                  name="Xác nhận"
-                  handleOnClick={handleResetPassword}
+                  name="Quay về đăng nhập"
+                  handleOnClick={() => {
+                    setIsResetPassword(false)
+                    setIsForgotPassword(false)
+                  }}
                   style="px-6 py-3 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 font-semibold transition-colors"
                 />
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
       
       <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
       <div className="absolute top-0 bottom-0 left-0 right-0 items-center justify-center flex">
