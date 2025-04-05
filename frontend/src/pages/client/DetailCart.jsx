@@ -82,6 +82,17 @@ const DetailCart = ({ location, navigate }) => {
   }
 
   const handleIncreaseQuantity = (productId, color, currentQuantity) => {
+    const product = currentCart.find(item => item.product?._id === productId && item.color === color);
+    
+    if (product && (product.product?.quantity < (currentQuantity + 1) || (currentQuantity + 1) > product.product?.quantity)) {
+        return Swal.fire({
+            title: "Oops...",
+            text: "Sản phẩm không đủ số lượng!",
+            icon: "info",
+            confirmButtonText: "Đã hiểu",
+        });
+    }
+    
     dispatch(
       updateCart({ pid: productId, color, quantity: currentQuantity + 1 })
     )

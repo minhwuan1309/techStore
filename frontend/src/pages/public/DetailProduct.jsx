@@ -150,14 +150,15 @@ const handleClickImage = (el) => {
             }).toString(),
           })
       })
-      if(product?.quantity < quantity) {
+      if(product?.quantity < quantity || quantity > product?.quantity) {
         return Swal.fire({
           title: "Oops...",
-          text: "Sản phẩm không còn hàng!",
+          text: "Sản phẩm không đủ số lượng!",
           icon: "info",
           confirmButtonText: "Đã hiểu",
         })
       }
+
     const response = await apiUpdateCart({
       pid,
       color: currentProduct.color || product?.color,

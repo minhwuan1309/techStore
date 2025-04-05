@@ -11,6 +11,7 @@ import { getCurrent } from 'store/user/asyncActions'
 import { toast } from 'react-toastify'
 import path from 'utils/path'
 import { updateCart, removeFromCart } from "store/user/userSlice"
+import Swal from 'sweetalert2'
 
 
 const Cart = ({ dispatch, navigate }) => {
@@ -41,12 +42,23 @@ const Cart = ({ dispatch, navigate }) => {
         }
     }
     const handleIncreaseQuantity = (productId, color, currentQuantity) => {
+        const product = currentCart.find(item => item.product?._id === productId && item.color === color);
+        
+        if (product && (product.product?.quantity < (currentQuantity + 1) || (currentQuantity + 1) > product.product?.quantity)) {
+            return Swal.fire({
+                title: "Oops...",
+                text: "Sản phẩm không đủ số lượng!",
+                icon: "info",
+                confirmButtonText: "Đã hiểu",
+            });
+        }
+        
         dispatch(
-          updateCart({ pid: productId, color, quantity: currentQuantity + 1 })
-        )
-      }
+            updateCart({ pid: productId, color, quantity: currentQuantity + 1 })
+        );
+    }
     
-      const handleDecreaseQuantity = (productId, color, currentQuantity) => {
+    const handleDecreaseQuantity = (productId, color, currentQuantity) => {
         if (currentQuantity > 1) {
           dispatch(
             updateCart({ pid: productId, color, quantity: currentQuantity - 1 })

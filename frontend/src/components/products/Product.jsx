@@ -78,6 +78,16 @@ const Product = ({
               }).toString(),
             })
         })
+      
+      if(productData?.quantity < 1) {
+        return Swal.fire({
+          title: "Oops...",
+          text: "Sản phẩm không đủ số lượng!",
+          icon: "info",
+          confirmButtonText: "Đã hiểu",
+        })
+      }
+
       const response = await apiUpdateCart({
         pid: productData?._id,
         color: productData?.color,
