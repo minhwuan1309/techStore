@@ -44,6 +44,13 @@ const Products = () => {
     const response = await apiGetProducts(queries)
     if (response.success) setProducts(response)
   }
+
+  useEffect(() => {
+    const page = params.get('page') || 1
+    fetchProductsByCategory({ page })
+    window.scrollTo(0, 0)
+  }, [params, category])
+
   useEffect(() => {
     const qParam = params.get("q");
     if (qParam) {
@@ -54,10 +61,7 @@ const Products = () => {
   
   useEffect(() => {
     if (sort) {
-      navigate({
-        pathname: `/${category}`,
-        search: createSearchParams({ sort }).toString(),
-      })
+      navigate(`/${category}`)
     }
   }, [sort])
 
@@ -116,44 +120,39 @@ const Products = () => {
   const changeValue = useCallback(
     (value) => {
       setSort(value)
-      navigate({
-        pathname: `/${category}`,
-        search: createSearchParams({ sort: value }).toString(),
-      })
+      navigate(`/${category}`)
     },
     [sort]
   )
 
   const handleApplyPriceFilter = () => {
     if (filterPrice.from || filterPrice.to) {
-      const newParams = new URLSearchParams(params)
-      if (filterPrice.from) newParams.set("from", filterPrice.from)
-      if (filterPrice.to) newParams.set("to", filterPrice.to)
-      setParams(newParams)
+      fetchProductsByCategory({
+        from: filterPrice.from,
+        to: filterPrice.to
+      })
     }
   }
 
   const handleColorFilter = (color) => {
     setSelectedColor(color)
-    const newParams = new URLSearchParams(params)
-    newParams.set("color", color)
-    setParams(newParams)
+    fetchProductsByCategory({ color })
   }
 
   const handleSearchChange = (event) => {
     const value = event.target.value
     setSearchQuery(value)
     if (value.trim() === "") {
-      navigate({
-        pathname: `/${category || "products"}`,
-      })
+      navigate(`/${category || "products"}`)
       fetchProductsByCategory({})
-    } else {
-      navigate({
-        pathname: `/${category || "products"}`,
-        search: createSearchParams({ q: value }).toString(),
-      })
     }
+  }
+
+  const handlePageChange = (pageNumber) => {
+    navigate({
+      pathname: `/${category || "products"}`,
+      search: createSearchParams({ page: pageNumber }).toString()
+    })
   }
 
   return (
@@ -410,6 +409,7 @@ const Products = () => {
                 pageSize={products?.products?.length || 0}
                 siblingCount={1}
                 currentPage={products?.currentPage}
+                onPageChange={handlePageChange}
                 className="flex items-center gap-2"
               />
             </div>
