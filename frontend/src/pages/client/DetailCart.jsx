@@ -10,6 +10,7 @@ import { updateCart, removeFromCart } from "store/user/userSlice"
 import { useState, useCallback } from "react"
 import { apiRemoveCart } from "apis"
 import { getCurrent } from "store/user/asyncActions"
+import { toast } from "react-hot-toast"
 
 const DetailCart = ({ location, navigate }) => {
   const dispatch = useDispatch()
@@ -55,11 +56,31 @@ const DetailCart = ({ location, navigate }) => {
   }
 
   const removeCart = async (pid, color) => {
-          const response = await apiRemoveCart(pid, color)
-          if (response.success) {
-              dispatch(getCurrent())
-          }
-      }
+    try {
+        // Tìm cart item để xóa khỏi Redux store trước
+        const cartItem = currentCart.find(
+            item => item.product?._id === pid && item.color === color
+        );
+        
+        if (cartItem) {
+            // Xóa từ Redux store trước để UI cập nhật ngay lập tức
+            dispatch(removeFromCart(cartItem._id));
+            
+            // Sau đó xóa từ server
+            const response = await apiRemoveCart(pid, color);
+            if (!response.success) {
+                // Nếu xóa từ server thất bại, fetch lại data mới
+                dispatch(getCurrent());
+                toast.error(response.mes);
+            }
+        }
+    } catch (error) {
+        // Nếu có lỗi, fetch lại data mới
+        dispatch(getCurrent());
+        toast.error("Có lỗi xảy ra");
+    }
+  }
+
   const handleIncreaseQuantity = (productId, color, currentQuantity) => {
     dispatch(
       updateCart({ pid: productId, color, quantity: currentQuantity + 1 })
@@ -72,7 +93,7 @@ const DetailCart = ({ location, navigate }) => {
         updateCart({ pid: productId, color, quantity: currentQuantity - 1 })
       )
     } else {
-      dispatch(removeFromCart(productId)) // Xóa sản phẩm nếu số lượng <= 1
+      removeCart(productId, color)
     }
   }
   const toggleProductSelection = (product) => {
@@ -152,17 +173,18 @@ const DetailCart = ({ location, navigate }) => {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="grid grid-cols-10 gap-4 bg-gray-100 py-3 rounded-t-lg font-bold text-center">
+            <div className="grid grid-cols-11 gap-4 bg-gray-100 py-3 rounded-t-lg font-bold text-center">
               <div className="col-span-1"></div>
               <div className="col-span-5">Sản phẩm</div>
               <div className="col-span-2">Số lượng</div>
               <div className="col-span-2">Giá</div>
+              <div className="col-span-1">Action</div>
             </div>
 
             {currentCart?.map((el) => (
               <div 
                 key={el._id} 
-                className="grid grid-cols-10 gap-4 items-center py-4 border-b hover:bg-gray-50 transition"
+                className="grid grid-cols-11 gap-4 items-center py-4 border-b hover:bg-gray-50 transition"
               >
                 <div className="col-span-1 flex justify-center">
                   <input
@@ -205,6 +227,9 @@ const DetailCart = ({ location, navigate }) => {
                     {formatMoney(el.price)} VNĐ
                   </span>
                   {el.note && <span className="text-red-500 text-sm ml-2">({el.note})</span>}
+                </div>
+                <div className="col-span-1 flex justify-center items-center">
+                  <button className="text-red-500 text-sm ml-2" onClick={() => removeCart(el.product?._id, el.color)}>Xóa</button>
                 </div>
               </div>
             ))}

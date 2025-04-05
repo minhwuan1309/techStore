@@ -16,11 +16,29 @@ import { updateCart, removeFromCart } from "store/user/userSlice"
 const Cart = ({ dispatch, navigate }) => {
     const { currentCart } = useSelector(state => state.user)
     const removeCart = async (pid, color) => {
-        const response = await apiRemoveCart(pid, color)
-        if (response.success) {
-            dispatch(getCurrent())
+        try {
+            // Tìm cart item để xóa khỏi Redux store trước
+            const cartItem = currentCart.find(
+                item => item.product?._id === pid && item.color === color
+            );
+            
+            if (cartItem) {
+                // Xóa từ Redux store trước để UI cập nhật ngay lập tức
+                dispatch(removeFromCart(cartItem._id));
+                
+                // Sau đó xóa từ server
+                const response = await apiRemoveCart(pid, color);
+                if (!response.success) {
+                    // Nếu xóa từ server thất bại, fetch lại data mới
+                    dispatch(getCurrent());
+                    toast.error(response.mes);
+                }
+            }
+        } catch (error) {
+            // Nếu có lỗi, fetch lại data mới
+            dispatch(getCurrent());
+            toast.error("Có lỗi xảy ra");
         }
-        else toast.error(response.mes)
     }
     const handleIncreaseQuantity = (productId, color, currentQuantity) => {
         dispatch(
@@ -33,8 +51,19 @@ const Cart = ({ dispatch, navigate }) => {
           dispatch(
             updateCart({ pid: productId, color, quantity: currentQuantity - 1 })
           )
+          console.log(productId, color, currentQuantity)
         } else {
-          dispatch(removeFromCart(productId)) // Xóa sản phẩm nếu số lượng <= 1
+          // Find the cart item by product ID and color
+          const cartItem = currentCart.find(
+            item => item.product?._id === productId && item.color === color
+          );
+          
+          if (cartItem) {
+            // First remove from Redux store
+            dispatch(removeFromCart(cartItem._id));
+            // Then remove from backend
+            removeCart(productId, color);
+          }
         }
       }
 

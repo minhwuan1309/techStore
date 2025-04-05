@@ -150,6 +150,14 @@ const handleClickImage = (el) => {
             }).toString(),
           })
       })
+      if(product?.quantity < quantity) {
+        return Swal.fire({
+          title: "Oops...",
+          text: "Sản phẩm không còn hàng!",
+          icon: "info",
+          confirmButtonText: "Đã hiểu",
+        })
+      }
     const response = await apiUpdateCart({
       pid,
       color: currentProduct.color || product?.color,
