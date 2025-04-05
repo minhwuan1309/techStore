@@ -35,6 +35,31 @@ const Product = ({
 
   const handleClickOptions = async (e, flag) => {
     e.stopPropagation()
+    if (flag === "WISHLIST") {
+      if (!current) {
+        return Swal.fire({
+          title: "Oops...",
+          text: "Mời bạn đăng nhập để thêm sản phẩm vào danh sách yêu thích!",
+          icon: "info",
+          cancelButtonText: "Để sau",
+          showCancelButton: true,
+          confirmButtonText: "Đến trang đăng nhập",
+        }).then(async (rs) => {
+          if (rs.isConfirmed)
+            navigate({
+              pathname: `/${path.LOGIN}`,
+              search: createSearchParams({
+                redirect: location.pathname,
+              }).toString(),
+            })
+        })
+      }
+      const response = await apiUpdateWishlist(productData?._id)
+      if (response.success) {
+        dispatch(getCurrent())
+        toast.success(response.mes)
+      } else toast.error(response.mes)
+    }
     if (flag === "CART") {
       if (!current)
         return Swal.fire({
@@ -62,16 +87,9 @@ const Product = ({
         title: productData?.title,
       })
       if (response.success) {
-        toast.success("Đã thêm vào giỏ hàng")
+        toast.success(response.mes)
         dispatch(getCurrent())
-      } else toast.error("Có lỗi xảy ra")
-    }
-    if (flag === "WISHLIST") {
-      const response = await apiUpdateWishlist(pid)
-      if (response.success) {
-        dispatch(getCurrent())
-        toast.success("Đã thêm vào danh sách yêu thích")
-      } else toast.error("Có lỗi xảy ra")
+      } else toast.error(response.mes)
     }
     if (flag === "QUICK_VIEW") {
       dispatch(

@@ -28,6 +28,7 @@ const ManageUser = () => {
     const [update, setUpdate] = useState(false)
     const [editElm, setEditElm] = useState(null)
     const [params] = useSearchParams()
+    const [selectedUser, setSelectedUser] = useState(null)
 
     const fetchUsers = async (params) => {
         const response = await apiGetUsers({ ...params, limit: process.env.REACT_APP_LIMIT })
@@ -81,20 +82,19 @@ const ManageUser = () => {
         }
     }
 
-    const handleDeleteUser = (uid) => {
-        Swal.fire({
-            title: 'Are you sure...',
-            text: 'Are you ready remove this user?',
-            showCancelButton: true
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                const response = await apiDeleteUser(uid)
-                if (response.success) {
-                    render()
-                    toast.success(response.mes)
-                } else toast.error(response.mes)
-            }
-        })
+    const handleDeleteUser = (user) => {
+        setSelectedUser(user)
+    }
+
+    const confirmDelete = async () => {
+        if (selectedUser) {
+            const response = await apiDeleteUser(selectedUser._id)
+            if (response.success) {
+                render()
+                toast.success(response.mes)
+                setSelectedUser(null)
+            } else toast.error(response.mes)
+        }
     }
 
     return (
@@ -235,6 +235,54 @@ const ManageUser = () => {
             <Pagination totalCount={users?.counts} />
           </div>
         </div>
+
+        {selectedUser && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                    <h2 className="text-2xl font-bold mb-4 text-gray-800">Xác nhận xóa tài khoản</h2>
+                    
+                    <div className="space-y-3 mb-6">
+                        <p className="flex justify-between">
+                            <span className="font-semibold">Email:</span>
+                            <span>{selectedUser.email}</span>
+                        </p>
+                        <p className="flex justify-between">
+                            <span className="font-semibold">Họ và tên:</span>
+                            <span>{selectedUser.firstname} {selectedUser.lastname}</span>
+                        </p>
+                        <p className="flex justify-between">
+                            <span className="font-semibold">Số điện thoại:</span>
+                            <span>{selectedUser.mobile}</span>
+                        </p>
+                        <p className="flex justify-between">
+                            <span className="font-semibold">Vai trò:</span>
+                            <span>{roles.find(role => +role.code === +selectedUser.role)?.value}</span>
+                        </p>
+                        <p className="flex justify-between">
+                            <span className="font-semibold">Trạng thái:</span>
+                            <span className={`px-2 py-1 rounded ${selectedUser.isBlocked ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}`}>
+                                {selectedUser.isBlocked ? "Đã chặn" : "Đang hoạt động"}
+                            </span>
+                        </p>
+                    </div>
+
+                    <div className="flex justify-end gap-4">
+                        <button
+                            onClick={confirmDelete}
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
+                        >
+                            Xác nhận xóa
+                        </button>
+                        <button
+                            onClick={() => setSelectedUser(null)}
+                            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-all"
+                        >
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
       </div>
     );
 }
