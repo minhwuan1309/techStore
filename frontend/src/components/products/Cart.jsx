@@ -29,7 +29,10 @@ const Cart = ({ dispatch, navigate }) => {
                 
                 // Sau đó xóa từ server
                 const response = await apiRemoveCart(pid, color);
-                if (!response.success) {
+                if (response.success) {
+                    // Nếu xóa từ server thành công, cập nhật lại state
+                    dispatch(getCurrent());
+                } else {
                     // Nếu xóa từ server thất bại, fetch lại data mới
                     dispatch(getCurrent());
                     toast.error(response.mes);

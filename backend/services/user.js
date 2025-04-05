@@ -460,28 +460,43 @@ class UserService {
   }
 
   async removeProductInCart(userId, pid, color) {
+    if (!userId || !pid || !color) {
+      return {
+        success: false,
+        mes: "Thiếu thông tin để xóa sản phẩm khỏi giỏ hàng",
+        statusCode: 400
+      }
+    }
+
     const user = await User.findById(userId).select("cart")
-    const alreadyProduct = user?.cart?.find(
-      (el) => el.product.toString() === pid && el.color === color
+    if (!user) {
+      return {
+        success: false,
+        mes: "Không tìm thấy người dùng",
+        statusCode: 404
+      }
+    }
+
+    const cartItemIndex = user.cart.findIndex(
+      el => el.product.toString() === pid && el.color === color
     )
-    
-    if (!alreadyProduct)
+
+    if (cartItemIndex === -1) {
       return {
         success: true,
-        mes: "Giỏ hàng đã được cập nhật",
+        mes: "Sản phẩm không có trong giỏ hàng",
         statusCode: 200
       }
-    
-    const response = await User.findByIdAndUpdate(
-      userId,
-      { $pull: { cart: { product: pid, color } } },
-      { new: true }
-    )
-    
+    }
+
+    // Xóa sản phẩm khỏi mảng cart
+    user.cart.splice(cartItemIndex, 1)
+    await user.save()
+
     return {
-      success: !!response,
-      mes: response ? "Đã xóa sản phẩm khỏi giỏ hàng" : "Đã xảy ra lỗi",
-      statusCode: response ? 200 : 400
+      success: true,
+      mes: "Đã xóa sản phẩm khỏi giỏ hàng",
+      statusCode: 200
     }
   }
 
