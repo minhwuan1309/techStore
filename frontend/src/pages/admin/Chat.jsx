@@ -51,22 +51,29 @@ const Chat = () => {
 
         // Listen for new messages
         socket.on('new-message', (msg) => {
-            // Prevent duplicate messages
             if (
                 (msg.sender === selectedUser?._id && msg.receiverId === current._id) ||
                 (msg.sender === current._id && msg.receiverId === selectedUser?._id)
             ) {
-                // Check if this message is already in the messages array
-                const isDuplicate = messages.some(
-                    existingMsg => 
-                        existingMsg.content === msg.content && 
-                        existingMsg.sender === msg.sender && 
-                        new Date(existingMsg.timestamp).getTime() === new Date(msg.timestamp).getTime()
-                )
-
-                if (!isDuplicate) {
-                    setMessages(prevMessages => [...prevMessages, msg])
-                }
+                setMessages(prevMessages => {
+                    // Check if message already exists to prevent duplicates
+                    const messageExists = prevMessages.some(
+                        existingMsg => 
+                            existingMsg.content === msg.content && 
+                            existingMsg.sender === msg.sender &&
+                            Math.abs(new Date(existingMsg.timestamp) - new Date(msg.timestamp)) < 1000 // Within 1 second
+                    )
+                    
+                    if (!messageExists) {
+                        return [...prevMessages, {
+                            sender: msg.sender,
+                            content: msg.content,
+                            timestamp: msg.timestamp,
+                            _id: msg._id
+                        }]
+                    }
+                    return prevMessages
+                })
             }
         })
 
@@ -95,7 +102,7 @@ const Chat = () => {
             socket.off('user-stop-typing')
             socket.off('connect_error')
         }
-    }, [current._id, selectedUser, messages])
+    }, [current._id, selectedUser])
 
     // Fetch chat history when a user is selected
     useEffect(() => {
@@ -179,22 +186,36 @@ const Chat = () => {
                     content: newMessage.trim()
                 }
                 
-                // Use socket to send message
-                const messageToSend = {
-                    ...messageData,
+                const timestamp = new Date()
+                
+                // Add message to UI immediately for better UX
+                setMessages(prevMessages => [...prevMessages, {
                     sender: current._id,
-                    timestamp: new Date()
-                }
+                    content: newMessage.trim(),
+                    timestamp,
+                    pending: true // Mark as pending until confirmed by server
+                }])
 
                 // Emit message via socket
-                socket.emit('send-message', messageToSend)
-                console.log(messageToSend)
-                // Clear input
+                socket.emit('send-message', {
+                    ...messageData,
+                    sender: current._id,
+                    timestamp
+                })
+
+                // Clear input immediately for better UX
                 setNewMessage('')
                 // Reset typing states
                 setLocalIsTyping(false)
+
+                // Also save via API for redundancy
+                await apiSendMessage(messageData)
             } catch (error) {
                 console.error('Error sending message:', error)
+                // Optionally handle failed messages here
+                setMessages(prevMessages => 
+                    prevMessages.filter(msg => !msg.pending || msg.content !== newMessage.trim())
+                )
             }
         }
     }
