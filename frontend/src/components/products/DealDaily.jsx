@@ -114,7 +114,7 @@ const DealDaily = ({ dispatch }) => {
         title: dealDaily.data.title,
         price: discountedPrice,
         quantity: 1,
-        note: "Sản phẩm được mua với ưu đãi Deal Daily",
+        note: "Sản phẩm được mua với ưu đãi",
     }
 
     localStorage.setItem("selectedProducts", JSON.stringify([dealProduct]))

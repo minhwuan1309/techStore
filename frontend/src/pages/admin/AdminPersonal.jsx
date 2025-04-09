@@ -1,19 +1,35 @@
-import { Button, InputForm } from 'components'
-import React, { useEffect } from 'react'
+import { Button, InputForm, Loading } from 'components'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import avatar from 'assets/avatarDefault.png'
 import { apiUpdateCurrent } from 'apis'
 import { getCurrent } from 'store/user/asyncActions'
 import { toast } from 'react-toastify'
+import { getBase64 } from 'utils/helpers'
 import { useSearchParams } from 'react-router-dom'
 import withBaseComponent from 'hocs/withBaseComponent'
+import { showModal } from 'store/app/appSlice'
 
 const AdminPersonal = ({ navigate }) => {
-  const { register, formState: { errors }, handleSubmit, reset } = useForm()
+  const { register, formState: { errors }, handleSubmit, reset, watch } = useForm()
   const { current } = useSelector(state => state.user)
   const dispatch = useDispatch()
   const [searchParams] = useSearchParams()
+  const [preview, setPreview] = useState(null)
+
+  const handlePreviewImage = async (file) => {
+    if (file) {
+      const base64 = await getBase64(file)
+      setPreview(base64)
+    }
+  }
+
+  useEffect(() => {
+    if (watch('avatar')?.[0]) {
+      handlePreviewImage(watch('avatar')[0])
+    }
+  }, [watch('avatar')])
 
   useEffect(() => {
     if (current) {
@@ -23,7 +39,6 @@ const AdminPersonal = ({ navigate }) => {
         mobile: current.mobile,
         email: current.email,
         avatar: current.avatar,
-        address: current.address,
         role: current.role
       });
     }
@@ -37,7 +52,10 @@ const AdminPersonal = ({ navigate }) => {
       formData.append(key, value)
     })
 
+    dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }))
     const res = await apiUpdateCurrent(formData)
+    dispatch(showModal({ isShowModal: false, modalChildren: null }))
+
     if (res.success) {
       toast.success(res.mes)
       dispatch(getCurrent())
@@ -61,7 +79,7 @@ const AdminPersonal = ({ navigate }) => {
           <div className="relative">
             <label htmlFor="file" className="cursor-pointer">
               <img
-                src={current?.avatar || avatar}
+                src={preview || current?.avatar || avatar}
                 alt="avatar"
                 className="w-40 h-40 object-cover rounded-full 
                 border-4 border-transparent 
@@ -69,15 +87,10 @@ const AdminPersonal = ({ navigate }) => {
                 transition-transform duration-300 hover:scale-105 
                 hover:rotate-6"
               />
-              <div className="absolute bottom-0 right-0 bg-purple-500 text-white p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.414-1.414A1 1 0 0011.586 3H8.414a1 1 0 00-.707.293L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-                </svg>
-              </div>
             </label>
           </div>
           <span className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
-            {current?.role >= 1945 ? "ADMIN" : "User"}
+            Role: {current?.role === 1945 ? "User" : " Admin"}
           </span>
         </div>
         <div className="grid grid-cols-2 gap-6">
@@ -86,7 +99,6 @@ const AdminPersonal = ({ navigate }) => {
         </div>
         <InputForm label="Số điện thoại" id="mobile" register={register} errors={errors} fullWidth />
         <InputForm label="Email" id="email" register={register} errors={errors} fullWidth />
-        <InputForm label="Địa chỉ" id="address" register={register} errors={errors} fullWidth />
         <input
           type="file"
           id="avatar"

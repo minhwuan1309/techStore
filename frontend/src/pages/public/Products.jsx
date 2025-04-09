@@ -68,6 +68,13 @@ const Products = () => {
     const queryObj = Object.fromEntries([...params])
     const finalQuery = {}
   
+    // Remove empty query parameters
+    Object.keys(queryObj).forEach(key => {
+      if (queryObj[key] !== '') {
+        finalQuery[key] = queryObj[key]
+      }
+    })
+
     // Tìm theo khoảng giá
     if (queryObj.to && queryObj.from) {
       finalQuery.$and = [
@@ -81,7 +88,6 @@ const Products = () => {
   
     // Merge các query còn lại
     const merged = {
-      ...queryObj,
       ...finalQuery,
     }
   
@@ -96,7 +102,19 @@ const Products = () => {
   useEffect(() => {
     if (queriesDebounce !== undefined) {
       const currentParams = Object.fromEntries([...params])
-      const newParams = { ...currentParams, q: queriesDebounce }
+      const newParams = {}
+      
+      // Copy existing params except 'q'
+      Object.keys(currentParams).forEach(key => {
+        if (key !== 'q' && currentParams[key] !== '') {
+          newParams[key] = currentParams[key]
+        }
+      })
+      
+      // Add search query if it exists
+      if (queriesDebounce?.trim()) {
+        newParams.q = queriesDebounce
+      }
   
       navigate({
         pathname: `/${category || "products"}`,
@@ -105,8 +123,12 @@ const Products = () => {
   
       fetchProductsByCategory(newParams)
     }
-  }, [queriesDebounce])
+  }, [queriesDebounce, category])
   
+  // Reset search when changing category
+  useEffect(() => {
+    setQueries({ q: "" })
+  }, [category])
 
   const changeActiveFilter = useCallback(
     (name) => {
@@ -140,11 +162,7 @@ const Products = () => {
 
   const handleSearchChange = (event) => {
     const value = event.target.value
-    setSearchQuery(value)
-    if (value.trim() === "") {
-      navigate(`/${category || "products"}`)
-      fetchProductsByCategory({})
-    }
+    setQueries(prev => ({ ...prev, q: value }))
   }
 
   return (
@@ -168,7 +186,7 @@ const Products = () => {
                 Tìm theo tên sản phẩm
               </label>
               <div className="relative">
-              <InputField
+                <InputField
                   nameKey="q"
                   value={queries.q}
                   setValue={setQueries}

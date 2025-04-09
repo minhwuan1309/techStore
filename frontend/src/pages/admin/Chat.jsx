@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useSelector } from 'react-redux'
-import { io } from 'socket.io-client'
+import socket from 'socket/socketClient'
 import { 
     apiGetUsers, 
     apiGetChatWith, 
@@ -9,11 +9,6 @@ import {
 } from 'apis'
 import useDebounce from 'hooks/useDebounce'
 
-const socket = io(process.env.REACT_APP_API_URI.replace('/api', ''), {
-    path: '/socket.io',
-    withCredentials: true,
-    transports: ['websocket', 'polling']
-})
 
 const Chat = () => {
     const { current } = useSelector(state => state.user)

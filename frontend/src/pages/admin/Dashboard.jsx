@@ -43,7 +43,7 @@ const Dashboard = () => {
         label: "Tổng đơn",
         data: [
           data?.pieData?.find((el) => el.status === "Cancelled")?.sum,
-          data?.pieData?.find((el) => el.status === "Succeed")?.sum,
+          data?.pieData?.map((el) => el.sum).reduce((a,b) => a+b, 0)
         ],
         backgroundColor: ["rgba(255, 99, 132, 0.2)", "rgba(54, 162, 235, 0.2)"],
         borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"],
@@ -245,7 +245,7 @@ const Dashboard = () => {
               Thống kê tổng đơn đã đặt và đơn huỷ
             </span>
             <div>
-              <Pie data={pieData} />;
+              <Pie data={pieData} />
             </div>
           </div>
         </div>

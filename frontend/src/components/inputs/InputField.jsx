@@ -14,16 +14,14 @@ const InputField = ({ value, setValue, nameKey, type, invalidFields, setInvalidF
           )}
           <input
             id={nameKey}
-            type={type}
+            type={type || 'text'}
             className={clsx(
               'px-4 py-2 rounded-sm border border-gray-400 w-full mt-2 placeholder:text-sm placeholder:italic outline-none',
               style
             )}
             placeholder={placeholder || nameKey?.slice(0, 1).toUpperCase() + nameKey?.slice(1)}
             value={value}
-            onChange={e =>
-              setValue(prev => ({ ...prev, [nameKey]: e.target.value }))
-            }
+            onChange={e => setValue(prev => ({ ...prev, [nameKey]: e.target.value }))}
             onFocus={() => setInvalidFieds && setInvalidFieds([])}
             pattern={pattern}
             title={title}

@@ -1,6 +1,6 @@
-import { Button, InputForm } from 'components'
+import { Button, InputForm, Loading } from 'components'
 import moment from 'moment'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import avatar from 'assets/avatarDefault.png'
@@ -10,12 +10,27 @@ import { toast } from 'react-toastify'
 import { getBase64 } from 'utils/helpers'
 import { useSearchParams } from 'react-router-dom'
 import withBaseComponent from 'hocs/withBaseComponent'
+import { showModal } from 'store/app/appSlice'
 
 const Personal = ({ navigate }) => {
     const { register, formState: { errors, isDirty }, handleSubmit, reset, watch } = useForm()
     const { current } = useSelector(state => state.user)
     const dispatch = useDispatch()
     const [searchParams] = useSearchParams()
+    const [preview, setPreview] = useState(null)
+
+    const handlePreviewImage = async (file) => {
+        if (file) {
+            const base64 = await getBase64(file)
+            setPreview(base64)
+        }
+    }
+
+    useEffect(() => {
+        if (watch('avatar')?.[0]) {
+            handlePreviewImage(watch('avatar')[0])
+        }
+    }, [watch('avatar')])
 
     useEffect(() => {
         reset({
@@ -34,7 +49,10 @@ const Personal = ({ navigate }) => {
         delete data.avatar
         for (let i of Object.entries(data)) formData.append(i[0], i[1])
 
+        dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }))
         const response = await apiUpdateCurrent(formData)
+        dispatch(showModal({ isShowModal: false, modalChildren: null }))
+        
         if (response.success) {
             dispatch(getCurrent())
             toast.success(response.mes)
@@ -57,7 +75,7 @@ const Personal = ({ navigate }) => {
           <div className="flex justify-center mb-4">
             <label htmlFor="file" className="cursor-pointer">
               <img
-                src={current?.avatar || avatar}
+                src={preview || current?.avatar || avatar}
                 alt="avatar"
                 className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-full border-4 border-indigo-500 hover:scale-105 transition-transform duration-300"
               />
