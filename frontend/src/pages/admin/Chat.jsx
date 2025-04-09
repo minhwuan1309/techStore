@@ -37,13 +37,6 @@ const Chat = () => {
 
     // Socket event listeners
     useEffect(() => {
-        // Establish connection
-        socket.on('connect', () => {
-            console.log('Socket connected')
-            // Join personal room
-            socket.emit('join', current._id)
-        })
-
         // Listen for new messages
         socket.on('new-message', (msg) => {
             if (
@@ -85,17 +78,10 @@ const Chat = () => {
             }
         })
 
-        // Handle connection errors
-        socket.on('connect_error', (error) => {
-            console.error('Socket connection error:', error)
-        })
-
         return () => {
-            socket.off('connect')
             socket.off('new-message')
             socket.off('user-typing')
             socket.off('user-stop-typing')
-            socket.off('connect_error')
         }
     }, [current._id, selectedUser])
 

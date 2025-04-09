@@ -266,7 +266,7 @@ const Login = () => {
               isHideLabel={true}
               fullWidth
               style="p-3 border rounded-md focus:border-indigo-500 transition-colors"
-              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+              pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
               title="Vui lòng nhập email hợp lệ (ví dụ: example@email.com)"
               type="email"
             />

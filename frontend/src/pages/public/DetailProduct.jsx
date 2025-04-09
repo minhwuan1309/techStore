@@ -10,7 +10,7 @@ import {
   CustomSlider,
 } from "components"
 import Slider from "react-slick"
-import ReactImageMagnify from "react-image-magnify"
+import { useZoomImageHover } from '@zoom-image/react'
 import { formatMoney, fotmatPrice, renderStarFromNumber } from "utils/helpers"
 import { productExtraInfomation } from "utils/contants"
 import DOMPurify from "dompurify"
@@ -50,6 +50,9 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
     price: "",
     color: "",
   })
+
+  const zoomTarget = useRef(null)
+  const { createZoomImage } = useZoomImageHover()
 
   useEffect(() => {
     if (data) {
@@ -200,6 +203,17 @@ const handleClickImage = (el) => {
     } else toast.error(response.mes)
   }
 
+  useEffect(() => {
+    if (zoomTarget.current) {
+      createZoomImage(zoomTarget.current, {
+        zoomImageSource: currentImage || currentProduct.thumb,
+        width: 600,
+        height: 600,
+        zoomWidth: 600,
+      })
+    }
+  }, [createZoomImage, currentImage, currentProduct.thumb])
+
   return (
     <div className={clsx("w-full bg-gray-50")}>
       {!isQuickView && (
@@ -251,42 +265,30 @@ const handleClickImage = (el) => {
             isQuickView && "w-full sm:w-1/2"
           )}
         >
-          <div className="w-full aspect-square border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden bg-white">
-            <ReactImageMagnify
-              {...{
-                smallImage: {
-                  alt: currentProduct.title || product?.title,
-                  isFluidWidth: true,
-                  src: currentImage || currentProduct.thumb,
-                },
-                largeImage: {
-                  src: currentImage || currentProduct.thumb,
-                  width: 1800,
-                  height: 1500,
-                },
-                enlargedImageContainerClassName: 'z-50'
-              }}
-            />
+          <div className="w-full aspect-square border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden bg-white relative">
+            <div ref={zoomTarget} className="w-full h-full">
+              <img
+                src={currentImage || currentProduct.thumb}
+                alt={currentProduct.title || product?.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
           <div className="w-full">
-            <Slider
-              className="image-slider flex gap-2 sm:gap-4 justify-between"
-              {...settings}
-            >
-              {currentProduct.images?.length > 0 &&
-                currentProduct.images.map((el, index) => (
-                  <div className="flex-1 p-1" key={index}>
-                    <img
-                      onClick={() => handleClickImage(el)}
-                      src={el}
-                      alt={`${currentProduct.title || product?.title} - Image ${index + 1}`}
-                      className={clsx(
-                        "w-full aspect-square cursor-pointer border rounded-lg object-cover hover:shadow-lg transition-all",
-                        currentImage === el ? "border-red-500" : "border-gray-200"
-                      )}
-                    />
-                  </div>
-                ))}
+            <Slider className="image-slider" {...settings}>
+              {currentProduct.images?.map((el, index) => (
+                <div className="flex-1 p-1" key={index}>
+                  <img
+                    onClick={() => handleClickImage(el)}
+                    src={el}
+                    alt={`${currentProduct.title || product?.title} - Image ${index + 1}`}
+                    className={clsx(
+                      "w-full aspect-square cursor-pointer border rounded-lg object-cover hover:shadow-lg transition-all",
+                      currentImage === el ? "border-red-500" : "border-gray-200"
+                    )}
+                  />
+                </div>
+              ))}
             </Slider>
           </div>
         </div>

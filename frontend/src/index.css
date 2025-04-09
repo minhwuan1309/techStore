@@ -115,3 +115,62 @@ code {
 .my-auto {
   margin: auto 0;
 }
+
+/* React Medium Image Zoom styles */
+[data-rmiz-modal-overlay] {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+}
+
+[data-rmiz-modal-img] {
+  max-height: 90vh !important;
+  max-width: 90vw !important;
+  object-fit: contain !important;
+}
+
+[data-rmiz-btn-zoom],
+[data-rmiz-btn-unzoom] {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  border-radius: 50% !important;
+  color: white !important;
+  padding: 8px !important;
+}
+
+[data-rmiz-btn-zoom]:hover,
+[data-rmiz-btn-unzoom]:hover {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Zoom Image styles */
+.zoom-image-hover {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.zoom-image-hover__zoomed {
+  position: absolute !important;
+  top: 0 !important;
+  left: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  margin-left: 1rem !important;
+  overflow: hidden !important;
+}
+
+.zoom-image-hover__img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+.image-slider {
+  margin-top: 1rem;
+}
+
+.image-slider .slick-slide {
+  padding: 0 0.5rem;
+}

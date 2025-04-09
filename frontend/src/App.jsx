@@ -45,6 +45,7 @@ import ConfirmOrder from "pages/client/OrderConfirmed";
 import Chat from "pages/admin/Chat"
 import AdminPersonal from "pages/admin/AdminPersonal";
 import ManageBrands from "pages/admin/ManageBrands";
+import socket from 'socket/socketClient'
 
 
 function App() {
@@ -52,9 +53,40 @@ function App() {
   const { isShowModal, modalChildren, isShowCart } = useSelector(
     (state) => state.app
   )
+  const { current } = useSelector((state) => state.user)
+
   useEffect(() => {
     dispatch(getCategories())
   }, [])
+
+  // Kết nối socket khi người dùng đã đăng nhập
+  useEffect(() => {
+    if (current?._id) {
+      // Kết nối socket
+      socket.connect()
+      
+      // Tham gia phòng cá nhân
+      socket.emit('join', current._id)
+      
+      // Xử lý sự kiện kết nối
+      socket.on('connect', () => {
+        console.log('Socket connected')
+      })
+      
+      // Xử lý lỗi kết nối
+      socket.on('connect_error', (error) => {
+        console.error('Socket connection error:', error)
+      })
+      
+      // Cleanup khi component unmount
+      return () => {
+        socket.off('connect')
+        socket.off('connect_error')
+        // Không ngắt kết nối socket ở đây để duy trì kết nối khi chuyển trang
+      }
+    }
+  }, [current?._id])
+
   return (
     <div className="font-jp">
       {isShowCart && (
