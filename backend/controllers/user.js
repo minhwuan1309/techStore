@@ -1,4 +1,5 @@
 const User = require("../models/user")
+const Product = require("../models/product")
 const jwt = require("jsonwebtoken")
 const crypto = require("crypto")
 const sendMail = require("../utils/sendMail")
@@ -254,6 +255,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   
   return res.status(rs.response?.includes("OK") ? 200 : 400).json({
     success: rs.response?.includes("OK") ? true : false,
+    token: resetToken,
     mes: rs.response?.includes("OK")
       ? "Vui lòng kiểm tra email của bạn."
       : "Đã xảy ra lỗi. Vui lòng thử lại sau."
@@ -350,6 +352,17 @@ const getUsers = asyncHandler(async (req, res) => {
   })
 })
 
+const getUser = asyncHandler(async (req, res) => {
+  const { uid } = req.params
+  const user = await User.findById(uid).select("-password -refreshToken")
+
+  return res.status(user ? 200 : 404).json({
+    success: !!user,
+    mes: user ? "Tìm thấy người dùng" : "Không tìm thấy người dùng",
+    user
+  })
+})
+
 const deleteUser = asyncHandler(async (req, res) => {
   const { uid } = req.params
   const response = await User.findByIdAndDelete(uid)
@@ -391,7 +404,7 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
   
   const response = await User.findByIdAndUpdate(uid, req.body, {
     new: true,
-  }).select("-password -role -refreshToken")
+  }).select("-password -refreshToken")
   
   return res.status(response ? 200 : 400).json({
     success: !!response,
@@ -420,10 +433,13 @@ const updateUserAddress = asyncHandler(async (req, res) => {
 
 const updateCart = asyncHandler(async (req, res) => {
   const { _id } = req.user
-  const { pid, quantity = 1, color, price, thumbnail, title } = req.body
+  const { pid, quantity = 1, color} = req.body
   
   if (!pid || !color) throw new Error("Vui lòng nhập đủ thông tin!")
   
+  const product = await Product.findById(pid).select("title thumb price")
+  if (!product) throw new Error("Không tìm thấy sản phẩm")
+
   const user = await User.findById(_id).select("cart")
   const alreadyProduct = user?.cart?.find(
     (el) => el.product.toString() === pid && el.color === color
@@ -432,13 +448,13 @@ const updateCart = asyncHandler(async (req, res) => {
   let response
   if (alreadyProduct) {
     response = await User.updateOne(
-      { cart: { $elemMatch: alreadyProduct } },
+      { _id, "cart.product": pid, "cart.color": color },
       {
         $set: {
           "cart.$.quantity": quantity,
-          "cart.$.price": price,
-          "cart.$.thumbnail": thumbnail,
-          "cart.$.title": title,
+          "cart.$.price": product.price,
+          "cart.$.thumbnail": product.thumb,
+          "cart.$.title": product.title,
         },
       },
       { new: true }
@@ -453,7 +469,14 @@ const updateCart = asyncHandler(async (req, res) => {
       _id,
       {
         $push: {
-          cart: { product: pid, quantity, color, price, thumbnail, title },
+          cart: { 
+            product: pid, 
+            quantity, 
+            color, 
+            price: product.price, 
+            thumbnail: product.thumb, 
+            title: product.title 
+          },
         },
       },
       { new: true }
@@ -561,6 +584,7 @@ module.exports = {
   forgotPassword,
   resetPassword,
   getUsers,
+  getUser,
   deleteUser,
   updateUser,
   updateUserByAdmin,

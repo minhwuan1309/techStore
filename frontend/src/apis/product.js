@@ -75,7 +75,14 @@ export const apiConfirmOrder = (orderId) =>
 export const apiDeleteOrderByAdmin = (oid) =>
   axios({
     url: "/order/admin/" + oid,
-    method: "delete",
+    method: "put",
+  })
+
+export const apiGetDeletedOrders = (params) =>
+  axios({
+    url: "/order/admin/deleted",
+    method: "get",
+    params,
   })
 
 

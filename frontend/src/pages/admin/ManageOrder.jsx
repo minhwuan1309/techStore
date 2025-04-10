@@ -1,7 +1,7 @@
-
 import {
   apiDeleteOrderByAdmin,
   apiGetOrders,
+  apiGetDeletedOrders,
   apiUpdateStatus,
 } from "apis"
 import clsx from "clsx"
@@ -40,12 +40,19 @@ const ManageOrder = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [selectedCustomer, setSelectedCustomer] = useState(null)
+  const [showDeleted, setShowDeleted] = useState(false)
 
   const fetchOrders = async (params) => {
-    const response = await apiGetOrders({
-      ...params,
-      limit: process.env.REACT_APP_LIMIT,
-    })
+    const response = showDeleted 
+      ? await apiGetDeletedOrders({
+          ...params,
+          limit: process.env.REACT_APP_LIMIT,
+        })
+      : await apiGetOrders({
+          ...params,
+          limit: process.env.REACT_APP_LIMIT,
+        })
+    
     if (response.success) {
       setCounts(response.counts)
       setOrders(response.orders)
@@ -72,7 +79,7 @@ const ManageOrder = () => {
   useEffect(() => {
     const searchParams = Object.fromEntries([...params])
     fetchOrders(searchParams)
-  }, [params, update])
+  }, [params, update, showDeleted])
 
   const handleDeleteProduct = (id) => {
     Swal.fire({
@@ -101,6 +108,11 @@ const ManageOrder = () => {
     } else toast.error(response.mes)
   }
 
+  const toggleShowDeleted = () => {
+    setShowDeleted(!showDeleted)
+    setUpdate(!update)
+  }
+
   const filteredOrders = orders?.filter((el) =>
     `${el.orderBy?.firstname} ${el.orderBy?.lastname}`
       .toLowerCase()
@@ -115,25 +127,38 @@ const ManageOrder = () => {
       <div className="flex justify-between items-center mb-6 pb-4 border-b-2 border-gray-200/20">
         <h1 className="text-4xl font-extrabold">
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
-            Quản lý đơn hàng
+            {showDeleted ? "Đơn hàng đã xóa" : "Quản lý đơn hàng"}
           </span>
         </h1>
-        {editOrder && (
-          <div className="flex space-x-4">
-            <Button
-              handleOnClick={handleUpdate}
-              style="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:opacity-90 px-6 py-2 shadow-lg transition-all duration-300 hover:scale-105"
-            >
-              Cập nhật
-            </Button>
-            <Button 
-              handleOnClick={() => setEditOrder(null)}
-              style="bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 px-6 py-2 shadow-md transition-all duration-300 hover:scale-105"
-            >
-              Quay lại
-            </Button>
-          </div>
-        )}
+        <div className="flex space-x-4">
+          <Button
+            handleOnClick={toggleShowDeleted}
+            style={clsx(
+              "rounded-xl px-6 py-2 shadow-lg transition-all duration-300 hover:scale-105",
+              showDeleted 
+                ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white" 
+                : "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+            )}
+          >
+            {showDeleted ? "Xem đơn hàng đang hoạt động" : "Xem đơn hàng đã xóa"}
+          </Button>
+          {editOrder && (
+            <>
+              <Button
+                handleOnClick={handleUpdate}
+                style="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:opacity-90 px-6 py-2 shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                Cập nhật
+              </Button>
+              <Button 
+                handleOnClick={() => setEditOrder(null)}
+                style="bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 px-6 py-2 shadow-md transition-all duration-300 hover:scale-105"
+              >
+                Quay lại
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="relative mb-6">
@@ -240,6 +265,11 @@ const ManageOrder = () => {
                     "Chưa thanh toán"
                   ) : (
                     el.status
+                  )}
+                  {showDeleted && (
+                    <span className="block text-red-500 text-sm mt-1">
+                      Đã xóa mềm
+                    </span>
                   )}
                 </td>
                 <td className="flex flex-col items-center text-center py-11">

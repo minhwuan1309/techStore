@@ -3,6 +3,10 @@ const asyncHandler = require('express-async-handler')
 
 const createNewBrand = asyncHandler(async (req, res) => {
   try {
+    const { title } = req.body
+    const exists = await Brand.findOne({ title })
+    if(exists) return res.status(400).json({success: false, mes: "Đã tồn tại thương hiệu này" })
+
     const response = await Brand.create(req.body)
     
     return res.status(response ? 200 : 400).json({
@@ -54,7 +58,7 @@ const deleteBrand = asyncHandler(async (req, res) => {
     
     return res.status(response ? 200 : 400).json({
       success: !!response,
-      deletedBrand: response || "Không thể xóa thương hiệu"
+      deletedBrand: "Xoá thương hiệu thành công" || "Không thể xóa thương hiệu"
     })
   } catch (error) {
     console.error(error.message)

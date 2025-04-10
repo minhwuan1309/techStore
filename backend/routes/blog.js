@@ -5,7 +5,7 @@ const uploader = require("../config/cloudinary.config")
 
 router.get("/", ctrls.getBlogs)
 router.post("/", [verifyAccessToken, isAdmin], uploader.single("image"), ctrls.createNewBlog)
-router.get("/one/:bid", ctrls.getBlog)
+router.get("/:bid", ctrls.getBlog)
 router.put("/likes/:bid", [verifyAccessToken], ctrls.likeBlog)
 
 router.put("/dislike/:bid", [verifyAccessToken], ctrls.dislikeBlog)

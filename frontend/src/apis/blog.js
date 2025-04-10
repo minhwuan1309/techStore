@@ -25,6 +25,6 @@ export const apiDeleteBlog = (id) =>
   })
 export const apiGetBlogById = (id) =>
   axios({
-    url: "/blog/one/" + id,
+    url: "/blog/" + id,
     method: "get",
   })

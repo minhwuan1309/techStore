@@ -147,7 +147,7 @@ const getUserOrders = asyncHandler(async (req, res) => {
   )
   
   const formatedQueries = JSON.parse(queryString)
-  const qr = { ...formatedQueries, orderBy: userId }
+  const qr = { ...formatedQueries, orderBy: userId, isDelete: false }
 
   let queryCommand = Order.find(qr)
 
@@ -213,7 +213,7 @@ const getOrders = asyncHandler(async (req, res) => {
   )
   
   const formatedQueries = JSON.parse(queryString)
-  const qr = { ...formatedQueries }
+  const qr = { ...formatedQueries, isDelete: false }
 
   let queryCommand = Order.find(qr).populate(
     "orderBy",
@@ -262,15 +262,79 @@ const getOrders = asyncHandler(async (req, res) => {
   }
 })
 
+const getDeletedOrders = asyncHandler(async (req, res) => {
+  const queries = req.query
+  
+  // Handle filtering, sorting, pagination
+  const excludeFields = ["limit", "sort", "page", "fields"]
+  const queryObj = { ...queries }
+  
+  excludeFields.forEach((el) => delete queryObj[el])
+
+  let queryString = JSON.stringify(queryObj)
+  queryString = queryString.replace(
+    /\b(gte|gt|lt|lte)\b/g,
+    (matchedEl) => `$${matchedEl}`
+  )
+  
+  const formatedQueries = JSON.parse(queryString)
+  const qr = { ...formatedQueries, isDelete: true }
+
+  let queryCommand = Order.find(qr).populate(
+    "orderBy",
+    "firstname lastname email mobile address"
+  )
+
+  // Sorting
+  if (queries.sort) {
+    const sortBy = queries.sort.split(",").join(" ")
+    queryCommand = queryCommand.sort(sortBy)
+  }
+
+  // Field limiting
+  if (queries.fields) {
+    const fields = queries.fields.split(",").join(" ")
+    queryCommand = queryCommand.select(fields)
+  }
+
+  // Pagination
+  const page = +queries.page || 1
+  const limit = +queries.limit || process.env.LIMIT_PRODUCTS
+  const skip = (page - 1) * limit
+  queryCommand.skip(skip).limit(limit)
+
+  try {
+    const response = await queryCommand
+
+    const orders = response.map((order) => ({
+      ...order.toObject(),
+      finalTotal: order.total - order.total * (order.discount / 100),
+    }))
+
+    const counts = await Order.find(qr).countDocuments()
+
+    return res.status(200).json({
+      success: orders.length > 0,
+      counts,
+      orders
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi khi lấy danh sách đơn hàng đã xóa",
+      error: error.message
+    })
+  }
+})
+
 const deleteOrderByAdmin = asyncHandler(async (req, res) => {
   const { id } = req.params
   const userId = req.user._id
   
   try {
-    const rs = await Order.findByIdAndDelete(id)
-    await User.findByIdAndUpdate(
-      userId,
-      { $pull: { orderHistory: id } },
+    const rs = await Order.findByIdAndUpdate(
+      id,
+      { isDelete: true },
       { new: true }
     )
     
@@ -326,6 +390,7 @@ const getDashboard = asyncHandler(async (req, res) => {
                 { createdAt: { $gte: new Date(start) } },
                 { createdAt: { $lte: new Date(end) } },
                 { status: "Succeed" },
+                { isDelete: false },
               ],
             },
           },
@@ -343,6 +408,7 @@ const getDashboard = asyncHandler(async (req, res) => {
                 { createdAt: { $gte: new Date(start) } },
                 { createdAt: { $lte: new Date(end) } },
                 { status: "Pending" },
+                { isDelete: false },
               ],
             },
           },
@@ -360,6 +426,7 @@ const getDashboard = asyncHandler(async (req, res) => {
                 { createdAt: { $gte: new Date(start) } },
                 { createdAt: { $lte: new Date(end) } },
                 { status: "Succeed" },
+                { isDelete: false },
               ],
             },
           },
@@ -377,6 +444,7 @@ const getDashboard = asyncHandler(async (req, res) => {
                 { createdAt: { $gte: new Date(start) } },
                 { createdAt: { $lte: new Date(end) } },
                 { status: "Succeed" },
+                { isDelete: false },
               ],
             },
           },
@@ -406,6 +474,7 @@ const getDashboard = asyncHandler(async (req, res) => {
               $and: [
                 { createdAt: { $gte: new Date(start) } },
                 { createdAt: { $lte: new Date(end) } },
+                { isDelete: false },
               ],
             },
           },
@@ -566,6 +635,7 @@ module.exports = {
   updateStatus,
   getUserOrders,
   getOrders,
+  getDeletedOrders,
   deleteOrderByAdmin,
   getDashboard,
   confirmOrder

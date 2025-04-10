@@ -12,6 +12,7 @@ router.post("/refreshtoken", ctrls.refreshAccessToken)
 router.get("/logout", ctrls.logout)
 router.post("/forgotpassword", ctrls.forgotPassword)
 router.put("/resetpassword", ctrls.resetPassword)
+router.get("/:uid", [verifyAccessToken, isAdmin], ctrls.getUser)
 router.get("/", [verifyAccessToken, isAdmin], ctrls.getUsers)
 router.put(
   "/current",
