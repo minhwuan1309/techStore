@@ -29,7 +29,8 @@ const createProduct = asyncHandler(async (req, res) => {
     
     return res.status(200).json({
       success: !!newProduct,
-      mes: newProduct ? "Đã tạo sản phẩm" : "Thất bại."
+      mes: newProduct ? "Đã tạo sản phẩm" : "Thất bại.",
+      product: newProduct
     })
   } catch (error) {
     return res.status(500).json({
@@ -201,7 +202,8 @@ const updateProduct = asyncHandler(async (req, res) => {
       success: !!updatedProduct,
       mes: updatedProduct
         ? "Cập nhật sản phẩm thành công."
-        : "Không thể cập nhật sản phẩm."
+        : "Không thể cập nhật sản phẩm.",
+      updateData
     })
   } catch (error) {
     return res.status(500).json({

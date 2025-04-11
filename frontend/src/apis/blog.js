@@ -14,8 +14,8 @@ export const apiGetBlogs = (params) =>
   })
 export const apiUpdateBlog = (data, id) =>
   axios({
-    url: "/blog/admin/" + id,
-    method: "post",
+    url: "/blog/" + id,
+    method: "put",
     data,
   })
 export const apiDeleteBlog = (id) =>

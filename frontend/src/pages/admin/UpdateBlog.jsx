@@ -52,7 +52,6 @@ const UpdateBlog = ({ title, description, image: imageLink, hashtags, id }) => {
         <div className="bg-gradient-to-r from-purple-600 to-pink-500 text-white p-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">
             Update Blog <br />
-            <span className="opacity-75">{title}</span>
           </h1>
           <button 
             onClick={() => dispatch(showModal({ isShowModal: false, modalChildren: null }))}

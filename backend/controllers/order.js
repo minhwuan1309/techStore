@@ -113,7 +113,8 @@ const updateStatus = asyncHandler(async (req, res) => {
     if (response) {
       return res.status(200).json({
         success: true,
-        mes: "Cập nhật thành công!"
+        mes: `Cập nhật thành công đơn hàng ${oid}!`,
+        status: response.status
       })
     } else {
       return res.status(400).json({
@@ -340,7 +341,8 @@ const deleteOrderByAdmin = asyncHandler(async (req, res) => {
     
     return res.status(rs ? 200 : 400).json({
       success: rs ? true : false,
-      mes: rs ? "Đã xoá đơn hàng" : "Đã xảy ra lỗi"
+      mes: rs ? "Đã xoá đơn hàng" : "Đã xảy ra lỗi",
+      status: `Xoá mềm đơn hàng ${id}`
     })
   } catch (error) {
     return res.status(500).json({

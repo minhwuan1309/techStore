@@ -161,7 +161,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
     
     return res.status(200).json({
       success: true,
-      deletedCategory
+      mes: "Xóa danh mục thành công."
     })
   } catch (error) {
     console.error("Lỗi khi xóa danh mục:", error)

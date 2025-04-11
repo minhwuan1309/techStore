@@ -39,7 +39,7 @@ const updateBlog = asyncHandler(async (req, res) => {
     return res.status(updatedBlog ? 200 : 400).json({
       success: !!updatedBlog,
       mes: updatedBlog ? "Cập nhật thành công." : "Không thể cập nhật bài viết",
-      updatedBlog
+      update: data
     })
   } catch (error) {
     console.error(error.message)
@@ -266,7 +266,7 @@ const deleteBlog = asyncHandler(async (req, res) => {
     
     return res.status(blog ? 200 : 400).json({
       success: !!blog,
-      deletedBlog: blog || "Đã xảy ra lỗi"
+      mes: "Xoá bài viết thành công",
     })
   } catch (error) {
     console.error(error.message)

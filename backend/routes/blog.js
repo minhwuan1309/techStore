@@ -9,8 +9,8 @@ router.get("/:bid", ctrls.getBlog)
 router.put("/likes/:bid", [verifyAccessToken], ctrls.likeBlog)
 
 router.put("/dislike/:bid", [verifyAccessToken], ctrls.dislikeBlog)
-router.post(
-  "/admin/:bid",
+router.put(
+  "/:bid",
   [verifyAccessToken, isAdmin],
   uploader.single("image"),
   ctrls.updateBlog

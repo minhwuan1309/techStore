@@ -19,6 +19,7 @@ const createNewCoupon = asyncHandler(async (req, res) => {
     
     return res.status(response ? 200 : 400).json({
       success: !!response,
+      mes: "Tạo mã giảm giá thành công",
       createdCoupon: response || "Không thể tạo mã giảm giá mới"
     })
   } catch (error) {
@@ -61,7 +62,8 @@ const updateCoupon = asyncHandler(async (req, res) => {
     
     return res.status(response ? 200 : 400).json({
       success: !!response,
-      updatedCoupon: response || "Không thể cập nhật mã giảm giá"
+      mes: "Cập nhật mã giảm giá thành công",
+      updatedCoupon: couponData
     })
   } catch (error) {
     console.error(error.message)
@@ -77,7 +79,7 @@ const deleteCoupon = asyncHandler(async (req, res) => {
     
     return res.status(response ? 200 : 400).json({
       success: !!response,
-      deletedCoupon: response || "Không thể xóa mã giảm giá"
+      mes: "Xóa mã giảm giá thành công",
     })
   } catch (error) {
     console.error(error.message)

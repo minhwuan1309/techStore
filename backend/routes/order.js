@@ -8,7 +8,7 @@ router.get("/admin", verifyAccessToken, isAdmin, ctrls.getOrders)
 router.get("/admin/deleted", verifyAccessToken, isAdmin, ctrls.getDeletedOrders)
 router.get("/dashboard",verifyAccessToken, isAdmin, ctrls.getDashboard)
 router.get("/", verifyAccessToken, ctrls.getUserOrders)
-router.put(
+router.delete(
   "/admin/:id",
   verifyAccessToken,
   isAdmin,

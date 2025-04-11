@@ -76,7 +76,7 @@ const ManageProducts = () => {
   const handleDeleteProduct = (pid) => {
     Swal.fire({
       title: "Cảnh báo!",
-      text: "Bạn có muốn xoá sản phẩm này không?",
+      text: `Bạn có muốn xoá sản phẩm này không?`,
       icon: "warning",
       showCancelButton: true,
     }).then(async (rs) => {
